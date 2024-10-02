@@ -26,7 +26,8 @@ public class Activity {
     private LocalTime closingTime;
     private int timeSlotInterval;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "activity_id") // This is the foreign key in the equipment table
     private List<Equipment> equipmentList;
 
     private Set<Equipment> equipmentRequiredPerPerson;
