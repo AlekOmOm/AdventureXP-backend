@@ -8,5 +8,5 @@ import java.time.LocalDate;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-    Iterable<Booking> findByDate(LocalDate date);
+
 }

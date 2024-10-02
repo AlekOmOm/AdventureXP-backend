@@ -5,13 +5,14 @@ import org.example.adventurexpbackend.model.Equipment;
 import org.example.adventurexpbackend.repository.ActivityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@Configuration
+@Component
 public class InitDataActivity {
     // Activity is for the activities: Paintball, Climbing, Go-kart
 
