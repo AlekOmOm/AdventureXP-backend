@@ -1,15 +1,20 @@
 package org.example.adventurexpbackend.config.initData;
 
+import org.example.adventurexpbackend.model.Activity;
 import org.example.adventurexpbackend.model.Booking;
 import org.example.adventurexpbackend.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
 public class InitDataBooking implements InitDataClass {
+
+    private List<Activity> activities;
+
 
     private final BookingRepository bookingRepository;
 
@@ -26,19 +31,21 @@ public class InitDataBooking implements InitDataClass {
 
     private List<Booking> getBookings() {
         return new ArrayList<>(List.of(
-            new Booking("2021-12-24", "10:00", "12:00", 1, 1),
-            new Booking("2021-12-24", "12:00", "14:00", 1, 1),
-            new Booking("2021-12-24", "14:00", "16:00", 1, 1),
-            new Booking("2021-12-24", "16:00", "18:00", 1, 1),
-            new Booking("2021-12-24", "18:00", "20:00", 1, 1),
-            new Booking("2021-12-24", "20:00", "22:00", 1, 1),
-            new Booking("2021-12-24", "22:00", "00:00", 1, 1),
-            new Booking("2021-12-24", "00:00", "02:00", 1, 1),
-            new Booking("2021-12-24", "02:00", "04:00", 1, 1),
-            new Booking("2021-12-24", "04:00", "06:00", 1, 1),
-            new Booking("2021-12-24", "06:00", "08:00", 1, 1)
+            new Booking(LocalTime.of(10, 0), LocalTime.of(12, 0), activities.getFirst().getPersonsMax(), activities.get(0)), // Paintball
+            new Booking(LocalTime.of(12, 0), LocalTime.of(14, 0), 6, activities.get(0)), // Paintball 2 booking
+            new Booking(LocalTime.of(14, 0), LocalTime.of(16, 0), 8, activities.get(0)), // Paintball 3 booking
+            new Booking(LocalTime.of(10, 0), LocalTime.of(12, 0), activities.get(1).getPersonsMax(), activities.get(1)), // Climbing
+            new Booking(LocalTime.of(12, 0), LocalTime.of(14, 0), 6, activities.get(1)), // Climbing 2 booking
+            new Booking(LocalTime.of(14, 0), LocalTime.of(16, 0), 8, activities.get(1)), // Climbing 3 booking
+            new Booking(LocalTime.of(10, 0), LocalTime.of(12, 0), activities.get(2).getPersonsMax(), activities.get(2)), // Go-kart
+            new Booking(LocalTime.of(12, 0), LocalTime.of(14, 0), 6, activities.get(2)), // Go-kart 2 booking
+            new Booking(LocalTime.of(14, 0), LocalTime.of(16, 0), 8, activities.get(2)) // Go-kart 3 booking
         ));
     }
+
+    public void setActivities(List<Activity> activities) {
+        this.activities = activities;
+    };
 
 
 }

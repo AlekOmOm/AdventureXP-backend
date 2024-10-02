@@ -6,8 +6,10 @@ import org.example.adventurexpbackend.repository.ActivityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Configuration
 public class InitDataActivity {
@@ -27,15 +29,14 @@ public class InitDataActivity {
 
     protected List<Activity> getActivities() {
         return new ArrayList<>(List.of(
-                new Activity("Paintball", "Paintball is a fun activity for everyone", 100, 120, 10, 100, 2, 20, 10, 18, 2, initDataEquipment.getPaintBallEquipmentList(), initDataEquipment.getPaintBallEquipmentRequiredPerPerson()),
-                new Activity("Climbing", "Climbing is a fun activity for everyone", 100, 120, 10, 100, 2, 20, 10, 18, 2, initDataEquipment.getClimbingEquipmentList(), initDataEquipment.getClimbingEquipmentRequiredPerPerson()),
-                new Activity("Go-kart", "Go-kart is a fun activity for everyone", 100, 120, 10, 100, 2, 20, 10, 18, 2, initDataEquipment.getGoKartEquipmentList(), initDataEquipment.getGoKartEquipmentRequiredPerPerson())
+                new Activity("Paintball", "Paintball is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18,0), 2, initDataEquipment.getPaintBallEquipmentList(), initDataEquipment.getPaintballEquipmentSet()),
+                new Activity("Climbing", "Climbing is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18,0), 2, initDataEquipment.getClimbingEquipmentList(), initDataEquipment.getClimbingEquipmentSet()),
+                new Activity("Go-kart", "Go-kart is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18,0), 2, initDataEquipment.getGoKartEquipmentList(), initDataEquipment.getGoKartEquipmentSet())
         ));
     }
 
     public void saveData() {
-        activityRepository.saveAll(getActivities());
-        initDataEquipment.saveData(getActivities());
+        List<Activity> savedActivities = activityRepository.saveAll(getActivities()); // save all activities
 
     }
 

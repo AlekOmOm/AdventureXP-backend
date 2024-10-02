@@ -25,10 +25,12 @@ public class Activity {
     private LocalTime closingTime;
     private int timeSlotInterval;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Equipment> equipmentList;
 
+    @OneToMany(cascade = CascadeType.ALL)
     private Set<Equipment> equipmentRequiredPerPerson;
+
 
     // ------------------- Constructors -------------------
     public Activity() {

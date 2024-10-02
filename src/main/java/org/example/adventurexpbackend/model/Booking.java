@@ -23,8 +23,11 @@ public class Booking {
     //Default constructor
     public Booking() {}
 
-    public Booking(String date, String time, String time1, int i, int i1) {
-
+    public Booking(LocalTime startTime, LocalTime endTime, int personsAmount, Activity activity) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.personsAmount = personsAmount;
+        this.activity = activity;
     }
 
 

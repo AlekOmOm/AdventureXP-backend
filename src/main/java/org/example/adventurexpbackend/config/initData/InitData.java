@@ -29,8 +29,9 @@ public class InitData implements CommandLineRunner {
     public void run(String... args) throws Exception {
         // save data
 
+        initDataEquipment.setActivities(initDataActivity.getActivities());
         initDataActivity.saveData();
-        initDataEquipment.saveData(initDataActivity.getActivities());
+        initDataBooking.setActivities(initDataActivity.getActivities());
         initDataBooking.saveData();
     }
 
