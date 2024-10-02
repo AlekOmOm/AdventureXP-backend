@@ -25,8 +25,12 @@ public class BookingService {
 
     // ----------------- Operations ---------------------
 
-    public Booking book(Booking booking) {
-        return createBooking(booking);
+    public Booking book(Activity activity, LocalDate date, LocalTime startTime, int personsAmount) {
+        // steps:
+        // 1. check if the activity is available at the given date and time
+        // 1a.
+
+
     }
 
     public List<LocalTime[]> getAvailableTimes(Activity activity, LocalDate date, int personsAmount) {
