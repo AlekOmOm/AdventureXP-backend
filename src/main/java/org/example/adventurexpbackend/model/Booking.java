@@ -14,7 +14,6 @@ public class Booking {
 
     private LocalTime startTime;
     private LocalTime endTime;
-    private List<Equipment> equipmentList;
     private int personsAmount;
 
     @ManyToOne
@@ -49,14 +48,6 @@ public class Booking {
 
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
-    }
-
-    public List<Equipment> getEquipmentList() {
-        return equipmentList;
-    }
-
-    public void setEquipmentList(List<Equipment> equipmentList) {
-        this.equipmentList = equipmentList;
     }
 
     public int getPersonsAmount() {
