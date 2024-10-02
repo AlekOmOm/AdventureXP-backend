@@ -18,6 +18,8 @@ public class BookingRESTController {
     private BookingService bookingService;
 
 
+    //ResponseEntities need to be changed at somepoint to display custom messages, or be deleted if they are not needed
+
     @PostMapping
     public ResponseEntity<Booking> createBooking(@RequestBody Booking booking) {
         Booking createdBooking = bookingService.book(booking);
