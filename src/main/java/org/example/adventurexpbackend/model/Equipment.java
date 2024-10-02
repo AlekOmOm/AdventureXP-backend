@@ -13,6 +13,10 @@ public class Equipment {
     private boolean functional;
     private boolean underService;
 
+    @ManyToOne
+    @JoinColumn(name = "activity_id")
+    private Activity activity;
+
     public Equipment() {
     }
 

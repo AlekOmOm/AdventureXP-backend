@@ -26,10 +26,10 @@ public class Activity {
     private LocalTime closingTime;
     private int timeSlotInterval;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "activity_id") // This is the foreign key in the equipment table
+    @OneToMany(mappedBy = "activity",cascade = CascadeType.ALL)
     private List<Equipment> equipmentList;
 
+    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL)
     private Set<Equipment> equipmentRequiredPerPerson;
 
     //
