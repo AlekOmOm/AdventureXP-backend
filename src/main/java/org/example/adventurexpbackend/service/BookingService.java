@@ -4,10 +4,12 @@ import org.example.adventurexpbackend.model.Activity;
 import org.example.adventurexpbackend.model.Booking;
 import org.example.adventurexpbackend.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -30,7 +32,19 @@ public class BookingService {
 
         List<Booking> bookingsAtDate = getBookingsByDate(date);
 
-//        LocalTime[] timeSlots = activity.getTimeSlotInterval();
+        List<Integer> activityTimeSlots = activity.getTimeSlots(); // openingTime and closingTime / x timeslotInterval = timeslots
+
+
+        for (Booking booking : bookingsAtDate) {
+            LocalTime startTime = booking.getStartTime();
+            LocalTime endTime = booking.getEndTime();
+
+
+            if (activityTimeSlots.contains(startTime.getHour())) {
+                activityTimeSlots.remove(startTime.getHour());
+            }
+        }
+
         return null;
     }
 
