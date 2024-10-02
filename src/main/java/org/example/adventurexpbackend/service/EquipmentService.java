@@ -1,0 +1,31 @@
+package org.example.adventurexpbackend.service;
+
+import org.example.adventurexpbackend.model.Equipment;
+import org.example.adventurexpbackend.repository.EquipmentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
+@Service
+public class EquipmentService {
+
+    @Autowired
+    private EquipmentRepository equipmentRepository;
+
+    // Create or Update equipment
+    public Equipment saveEquipment(Equipment equipment) {
+        return equipmentRepository.save(equipment);
+    }
+
+    // Retrieve all equipment
+    public Iterable<Equipment> getAllEquipment() {
+        return equipmentRepository.findAll();
+    }
+
+    // Retrieve equipment by id
+    public Optional<Equipment> getEquipmentById(Long id) {
+        return equipmentRepository.findById(id);
+    }
+
+}
