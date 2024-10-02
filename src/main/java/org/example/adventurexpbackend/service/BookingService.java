@@ -71,7 +71,7 @@ public class BookingService {
         return bookingRepository.findAll();
     }
 
-    public Booking updateBooking(Long id, Booking booking) {
+    public Booking updateBooking(Booking booking) {
         return bookingRepository.save(booking);
     }
 

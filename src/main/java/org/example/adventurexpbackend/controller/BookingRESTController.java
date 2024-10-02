@@ -38,7 +38,7 @@ public class BookingRESTController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Booking> updateBooking(@PathVariable Long id, @RequestBody Booking updatedBooking) {
-        Booking booking = bookingService.updateBooking(id,updatedBooking);
+        Booking booking = bookingService.updateBooking(updatedBooking);
         if (booking == null) {
             return ResponseEntity.notFound().build();
         }
