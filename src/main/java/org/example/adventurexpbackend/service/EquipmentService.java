@@ -1,9 +1,7 @@
 package org.example.adventurexpbackend.service;
 
 import org.example.adventurexpbackend.exceptions.ResourceNotFoundException;
-import jakarta.persistence.Id;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 
 public class EquipmentService {
 
@@ -13,25 +11,30 @@ public class EquipmentService {
 
 
     //Method to mark an equipment as funtional
-    public void markAsFunctional(Long equipmentId) {
+    public String markAsFunctional(Long equipmentId) {
 
         try{
-            Equipment equipment = equipmentRepository.findById)
-            .orElseTrow(() -> ResourceNotFoundException("Suffer! there is no equipment with" + equipmentId + " found"));
 
+            // Here we get(fetch) the equipment by the id
+            Equipment equipment = equipmentRepository.findById(equipmentId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Equipment with ID " + equipmentId + " not found"));
+
+            // Here we set the equipment as functional
             equipment.setFunctional(true);
+            // Here we save the equipment
             equipmentRepository.save(equipment);
+            // Here we return a message
+            return "Equipment marked as functional successfully.";
         }
 
-        catch (ResourceNotFoundException e){
-            System.out.println("Fail in method MarkAsFunctional");
+        catch (ResourceNotFoundException e) {
+
+            return "error: " + e.getMessage();
         }
+
 
 
 
 
     }
-
-
-
 }

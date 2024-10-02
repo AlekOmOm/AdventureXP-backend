@@ -15,7 +15,7 @@ public class EquipmentController {
     @Autowired
     EquipmentService equipmentService;
 
-
+//---------------------------------------------------------------------------------------------------------------------
     // this is the endpoint to mark equipment as functional by the equipment id
     @PutMapping("/markAsFunctional/{id}")
     public ResponseEntity<String> markAsFunctional(@PathVariable long id) {
@@ -26,5 +26,6 @@ public class EquipmentController {
         }
         return ResponseEntity.ok(function);
     }
+//---------------------------------------------------------------------------------------------------------------------
 
 }
