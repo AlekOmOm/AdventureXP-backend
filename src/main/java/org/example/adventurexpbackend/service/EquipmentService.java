@@ -28,4 +28,14 @@ public class EquipmentService {
         return equipmentRepository.findById(id);
     }
 
+    // Retrieve equipment by name
+    public Optional<Equipment> getEquipmentByName(String name) {
+        return Optional.ofNullable(equipmentRepository.findByName(name));
+    }
+
+    // Delete equipment by id
+    public void deleteEquipmentById(Long id) {
+        equipmentRepository.deleteById(id);
+    }
+
 }
