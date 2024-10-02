@@ -1,9 +1,7 @@
 package org.example.adventurexpbackend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 
 @Entity
 public class Equipment {
@@ -15,15 +13,24 @@ public class Equipment {
     private boolean functional;
     private boolean underService;
 
+    @ManyToOne
+    @JoinColumn(name = "activity_id") // This is the foreign key
+    @JsonBackReference // This is to prevent infinite recursion
+    private Activity activity;
+
+
     // ------------------- Constructors -------------------
     public Equipment() {
     }
 
-    public Equipment(String name, boolean functional, boolean underService) {
+    public Equipment(String name, boolean functional, boolean underService, Activity activity) {
         this.name = name;
         this.functional = functional;
         this.underService = underService;
+        this.activity = activity;
     }
+
+
 
     // ------------------- Getter & Setters -------------------
     public Long getId() {

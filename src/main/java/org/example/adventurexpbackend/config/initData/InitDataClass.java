@@ -1,6 +1,8 @@
 package org.example.adventurexpbackend.config.initData;
 
-public interface InitDataClass {
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
+public interface InitDataClass {
     void saveData();
 }
