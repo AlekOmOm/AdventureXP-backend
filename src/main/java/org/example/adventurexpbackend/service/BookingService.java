@@ -8,16 +8,19 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class BookingService {
 
     private final BookingRepository bookingRepository;
+    private final ActivityService activityService;
 
     @Autowired
-    public BookingService(BookingRepository bookingRepository) {
+    public BookingService(BookingRepository bookingRepository, ActivityService activityService) {
         this.bookingRepository = bookingRepository;
+        this.activityService = activityService;
     }
 
     // ----------------- Operations ---------------------
@@ -28,11 +31,27 @@ public class BookingService {
 
     public List<LocalTime[]> getAvailableTimes(Activity activity, LocalDate date, int personsAmount) {
 
-        List<Booking> bookingsAtDate = getBookingsByDate(date);
+        List<Booking> bookingsAtDate = getBookingsByDate(activity, date);
 
-//        LocalTime[] timeSlots = activity.getTimeSlotInterval();
-        return null;
+        List<LocalTime[]> availableTimeSlots = getTimeSlots(activity.getOpeningTime(), activity.getClosingTime(), activity.getTimeSlotInterval());
+
+        for (Booking booking : bookingsAtDate) {
+
+            List<LocalTime[]> bookingTimeSlots = getTimeSlots(booking.getStartTime(), booking.getEndTime(), booking.activity.getTimeSlotInterval());
+
+            for (LocalTime[] bookingTimeSlot : bookingTimeSlots) {
+                for (LocalTime[] availableTimeSlot : availableTimeSlots) {
+                    if (availableTimeSlot[0].isAfter(bookingTimeSlot[0]) && availableTimeSlot[1].isBefore(bookingTimeSlot[1])) {
+                        availableTimeSlots.remove(availableTimeSlot);
+                    }
+                }
+            }
+        }
+
+        return availableTimeSlots;
     }
+
+
 
     // ----------------- CRUD Operations ---------------------
 
@@ -44,7 +63,7 @@ public class BookingService {
         return bookingRepository.findById(id).orElse(null);
     }
 
-    public List<Booking> getBookingsByDate(LocalDate date) {
+    public List<Booking> getBookingsByDate(Activity activity, LocalDate date) {
         return (List<Booking>) bookingRepository.findByDate(date);
     }
 
@@ -60,6 +79,18 @@ public class BookingService {
         bookingRepository.deleteById(id);
     }
 
+
+    // ----------------- Helper Methods ---------------------
+
+    private static List<LocalTime[]> getTimeSlots(LocalTime startTime, LocalTime endTime, int timeSlotInterval) {
+        List<LocalTime[]> timeSlots = new ArrayList<>();
+        while (startTime.isBefore(endTime)) {
+            LocalTime[] timeSlotArray = {startTime, startTime.plusMinutes(timeSlotInterval)};
+            timeSlots.add(timeSlotArray);
+            startTime = startTime.plusMinutes(timeSlotInterval);
+        }
+        return timeSlots;
+    }
 
 
 }
