@@ -30,7 +30,7 @@ public class Activity {
 
     private Set<Equipment> equipmentRequiredPerPerson;
 
-    //
+    // ------------------- Constructors -------------------
     public Activity() {
     }
 
