@@ -10,7 +10,7 @@ public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     private LocalTime startTime;
     private LocalTime endTime;
@@ -27,11 +27,11 @@ public class Booking {
 
 
 //----------------------getters and setters------------------------
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
