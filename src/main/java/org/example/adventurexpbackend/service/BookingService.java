@@ -4,7 +4,6 @@ import org.example.adventurexpbackend.model.Activity;
 import org.example.adventurexpbackend.model.Booking;
 import org.example.adventurexpbackend.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -16,10 +15,12 @@ import java.util.List;
 public class BookingService {
 
     private final BookingRepository bookingRepository;
+    private final ActivityService activityService;
 
     @Autowired
-    public BookingService(BookingRepository bookingRepository) {
+    public BookingService(BookingRepository bookingRepository, ActivityService activityService) {
         this.bookingRepository = bookingRepository;
+        this.activityService = activityService;
     }
 
     // ----------------- Operations ---------------------
@@ -30,23 +31,27 @@ public class BookingService {
 
     public List<LocalTime[]> getAvailableTimes(Activity activity, LocalDate date, int personsAmount) {
 
-        List<Booking> bookingsAtDate = getBookingsByDate(date);
+        List<Booking> bookingsAtDate = getBookingsByDate(activity, date);
 
-        List<Integer> activityTimeSlots = activity.getTimeSlots(); // openingTime and closingTime / x timeslotInterval = timeslots
-
+        List<LocalTime[]> availableTimeSlots = getTimeSlots(activity.getOpeningTime(), activity.getClosingTime(), activity.getTimeSlotInterval());
 
         for (Booking booking : bookingsAtDate) {
-            LocalTime startTime = booking.getStartTime();
-            LocalTime endTime = booking.getEndTime();
 
+            List<LocalTime[]> bookingTimeSlots = getTimeSlots(booking.getStartTime(), booking.getEndTime(), booking.activity.getTimeSlotInterval());
 
-            if (activityTimeSlots.contains(startTime.getHour())) {
-                activityTimeSlots.remove(startTime.getHour());
+            for (LocalTime[] bookingTimeSlot : bookingTimeSlots) {
+                for (LocalTime[] availableTimeSlot : availableTimeSlots) {
+                    if (availableTimeSlot[0].isAfter(bookingTimeSlot[0]) && availableTimeSlot[1].isBefore(bookingTimeSlot[1])) {
+                        availableTimeSlots.remove(availableTimeSlot);
+                    }
+                }
             }
         }
 
-        return null;
+        return availableTimeSlots;
     }
+
+
 
     // ----------------- CRUD Operations ---------------------
 
@@ -58,7 +63,7 @@ public class BookingService {
         return bookingRepository.findById(id).orElse(null);
     }
 
-    public List<Booking> getBookingsByDate(LocalDate date) {
+    public List<Booking> getBookingsByDate(Activity activity, LocalDate date) {
         return (List<Booking>) bookingRepository.findByDate(date);
     }
 
@@ -74,6 +79,18 @@ public class BookingService {
         bookingRepository.deleteById(id);
     }
 
+
+    // ----------------- Helper Methods ---------------------
+
+    private static List<LocalTime[]> getTimeSlots(LocalTime startTime, LocalTime endTime, int timeSlotInterval) {
+        List<LocalTime[]> timeSlots = new ArrayList<>();
+        while (startTime.isBefore(endTime)) {
+            LocalTime[] timeSlotArray = {startTime, startTime.plusMinutes(timeSlotInterval)};
+            timeSlots.add(timeSlotArray);
+            startTime = startTime.plusMinutes(timeSlotInterval);
+        }
+        return timeSlots;
+    }
 
 
 }
