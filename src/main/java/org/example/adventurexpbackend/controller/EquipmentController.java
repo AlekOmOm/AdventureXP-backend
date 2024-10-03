@@ -18,13 +18,14 @@ public class EquipmentController {
     @Autowired
     EquipmentService equipmentService;
 
+
+
+//----------------------------------------------------------------------------------------------------------------------
     @GetMapping("/all")
-    public List<Equipment> getAllEquipment(){
-        return equipmentService.getAllEquipment();
+    public ResponseEntity<List<Equipment>> getAllEquipment() {
+        List<Equipment> equipmentList = equipmentService.getAllEquipment();
+        return ResponseEntity.ok(equipmentList);
     }
-
-
-
 //---------------------------------------------------------------------------------------------------------------------
     // this is the endpoint to mark equipment as functional by the equipment id
     @PutMapping("/markAsFunctional/{id}")
