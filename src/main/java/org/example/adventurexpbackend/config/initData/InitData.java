@@ -4,14 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Component
 public class InitData implements CommandLineRunner {
-
-    // services for saving data
-    // private final
 
     private final InitDataActivity initDataActivity;
     private final InitDataEquipment initDataEquipment;
@@ -21,22 +15,14 @@ public class InitData implements CommandLineRunner {
     public InitData(InitDataActivity initDataActivity, InitDataEquipment initDataEquipment, InitDataBooking initDataBooking) {
         this.initDataActivity = initDataActivity;
         this.initDataEquipment = initDataEquipment;
-        initDataEquipment.setActivities(initDataActivity.getActivities());
         this.initDataBooking = initDataBooking;
     }
 
-
     @Override
     public void run(String... args) throws Exception {
-        // save data
-
         initDataActivity.saveData();
-        initDataEquipment.setActivities(initDataActivity.getActivities());
+        initDataEquipment.saveData();
         initDataBooking.setActivities(initDataActivity.getActivities());
         initDataBooking.saveData();
     }
-
-
-
-
 }

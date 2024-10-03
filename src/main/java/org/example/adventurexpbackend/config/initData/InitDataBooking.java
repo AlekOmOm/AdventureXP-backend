@@ -2,6 +2,7 @@ package org.example.adventurexpbackend.config.initData;
 
 import org.example.adventurexpbackend.model.Activity;
 import org.example.adventurexpbackend.model.Booking;
+import org.example.adventurexpbackend.repository.ActivityRepository;
 import org.example.adventurexpbackend.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -15,19 +16,19 @@ import java.util.List;
 @Component
 public class InitDataBooking implements InitDataClass {
 
+    private final ActivityRepository activityRepository;
     private List<Activity> activities;
-
-
     private final BookingRepository bookingRepository;
 
     @Autowired
-    public InitDataBooking(BookingRepository bookingRepository) {
+    public InitDataBooking(BookingRepository bookingRepository, ActivityRepository activityRepository) {
         this.bookingRepository = bookingRepository;
+        this.activityRepository = activityRepository;
     }
-
 
     @Override
     public void saveData() {
+        this.activities = activityRepository.findAll();
         bookingRepository.saveAll(getBookings());
     }
 

@@ -4,7 +4,6 @@ import org.example.adventurexpbackend.model.Activity;
 import org.example.adventurexpbackend.model.Equipment;
 import org.example.adventurexpbackend.repository.EquipmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -30,9 +29,6 @@ public class InitDataEquipment {
         this.activities = activities;
     }
 
-    // Equipment is for the activities: Paintball, Climbing, Go-kart
-
-
     public List<Equipment> getEquipmentList() {
         List<Equipment> equipmentList = new ArrayList<>();
         for (Activity activity : activities) {
@@ -53,8 +49,6 @@ public class InitDataEquipment {
         return equipmentList;
     }
 
-    // ----------------- Equipment Lists for Activities ---------------------
-
     public List<Equipment> getPaintBallEquipmentList() {
         return paintballEquipmentList;
     }
@@ -67,38 +61,27 @@ public class InitDataEquipment {
         return goKartEquipmentList;
     }
 
-
-    // ----------------- Equipment Sets ---------------------
-
     public Set<Equipment> getGoKartEquipmentSet() {
-        Activity goKartActivity = new Activity("Go-kart", "Go-kart is a fun activity for everyone", 100, 120, 10, 100, 2, 20, null, null, 2, null, null);
-
         return new HashSet<>(List.of(
-                new Equipment("Go-kart helmet", true, false, goKartActivity),
-                new Equipment("Go-kart suit", true, false, goKartActivity),
-                new Equipment("Go-kart gloves", true, false, goKartActivity)
+                new Equipment("Go-kart helmet", true, false, null),
+                new Equipment("Go-kart suit", true, false, null),
+                new Equipment("Go-kart gloves", true, false, null)
         ));
     }
 
     public Set<Equipment> getClimbingEquipmentSet() {
-        Activity climbingActivity = new Activity("Climbing", "Climbing is a fun activity for everyone", 100, 120, 10, 100, 2, 20, null, null, 2, null, null);
-
         return new HashSet<>(List.of(
-                new Equipment("Climbing shoes", true, false, climbingActivity),
-                new Equipment("Climbing harness", true, false, climbingActivity),
-                new Equipment("Climbing chalk", true, false, climbingActivity)
+                new Equipment("Climbing shoes", true, false, null),
+                new Equipment("Climbing harness", true, false, null),
+                new Equipment("Climbing chalk", true, false, null)
         ));
     }
 
     public Set<Equipment> getPaintballEquipmentSet() {
-        Activity paintballActivity = new Activity("Paintball", "Paintball is a fun activity for everyone", 100, 120, 10, 100, 2, 20, null, null, 2, null, null);
-
         return new HashSet<>(List.of(
-                new Equipment("Paintball gun", true, false, paintballActivity),
-                new Equipment("Paintball mask", true, false, paintballActivity),
-                new Equipment("Paintball suit", true, false, paintballActivity)
+                new Equipment("Paintball gun", true, false, null),
+                new Equipment("Paintball mask", true, false, null),
+                new Equipment("Paintball suit", true, false, null)
         ));
     }
-
-
 }

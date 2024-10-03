@@ -14,8 +14,8 @@ public class Equipment {
     private boolean underService;
 
     @ManyToOne
-    @JoinColumn(name = "activity_id") // This is the foreign key
-    @JsonBackReference // This is to prevent infinite recursion
+    @JoinColumn(name = "activity_id")
+    @JsonBackReference
     private Activity activity;
 
 
