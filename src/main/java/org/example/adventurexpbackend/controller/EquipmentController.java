@@ -15,6 +15,13 @@ public class EquipmentController {
     @Autowired
     EquipmentService equipmentService;
 
+    @GetMapping("/all")
+    public List<Equipment> getAllEquipment(){
+        return equipmentService.getAllEquipment();
+    }
+
+
+
 //---------------------------------------------------------------------------------------------------------------------
     // this is the endpoint to mark equipment as functional by the equipment id
     @PutMapping("/markAsFunctional/{id}")
