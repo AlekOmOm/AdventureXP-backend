@@ -4,6 +4,7 @@ import org.example.adventurexpbackend.model.Booking;
 import org.example.adventurexpbackend.repository.BookingRepository;
 import org.example.adventurexpbackend.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,9 +22,14 @@ public class BookingRESTController {
     //ResponseEntities need to be changed at somepoint to display custom messages, or be deleted if they are not needed
 
     @PostMapping
-    public ResponseEntity<Booking> createBooking(@RequestBody Booking booking) {
-        Booking createdBooking = bookingService.book(booking);
-        return ResponseEntity.ok(createdBooking);
+    public ResponseEntity<String> createBooking(@RequestBody Booking booking) {
+    boolean isBookingCreated = bookingService.createBooking(booking);
+
+    if (isBookingCreated) {
+        return ResponseEntity.status(HttpStatus.CREATED).body("Booking successful");
+    }else {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Booking denied: Max participants limit reached");
+    }
     }
 
     @GetMapping

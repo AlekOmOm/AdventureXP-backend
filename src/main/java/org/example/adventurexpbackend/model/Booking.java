@@ -67,4 +67,12 @@ public class Booking {
     public void setParticipantName(String participantName) {
         this.participantName = participantName;
     }
+
+    public Activity getActivity() {
+        return activity;
+    }
+
+    public void setActivity(Activity activity) {
+
+    }
 }
