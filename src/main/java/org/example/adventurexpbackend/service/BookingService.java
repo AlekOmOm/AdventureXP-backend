@@ -26,7 +26,14 @@ public class BookingService {
     // ----------------- Operations ---------------------
 
     public Booking book(Booking booking) {
-        return createBooking(booking);
+        //return createBooking(booking);
+        boolean isBookingCreated = createBooking(booking);
+
+        if (isBookingCreated) {
+            return booking;
+        }else{
+            return null; //return null if booking was denied
+        }
     }
 
     public List<LocalTime[]> getAvailableTimes(Activity activity, LocalDate date, int personsAmount) {
