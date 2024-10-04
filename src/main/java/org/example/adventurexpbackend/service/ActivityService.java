@@ -33,6 +33,21 @@ public class ActivityService {
         return activityList;
     }
 
+    public List<Activity> getAllActivities() {
+
+        List<Activity> activities = activityRepository.findAll();
+        for (Activity activity : activities) {
+            System.out.println("DEBUG getAllActivities");
+            System.out.println(" activity: "+activity);
+            activity.setEquipmentList(equipmentRepository.findByActivity(activity));
+        }
+        System.out.println();
+        System.out.println("activities: ");
+        System.out.println(" "+activities);
+
+        return activities;
+    }
+
     public void addEquipmentToActivity(Activity activity, Equipment equipment) {
         Set<EquipmentType> requiredTypes = activity.getEquipmentTypes();
         if (requiredTypes.contains(equipment.getEquipmentType())) {

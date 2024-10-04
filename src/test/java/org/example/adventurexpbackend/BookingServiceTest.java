@@ -1,7 +1,11 @@
 package org.example.adventurexpbackend;
+
+import org.example.adventurexpbackend.config.initData.InitData;
 import org.example.adventurexpbackend.model.Activity;
 import org.example.adventurexpbackend.model.Booking;
+import org.example.adventurexpbackend.repository.ActivityRepository;
 import org.example.adventurexpbackend.repository.BookingRepository;
+import org.example.adventurexpbackend.repository.EquipmentRepository;
 import org.example.adventurexpbackend.service.ActivityService;
 import org.example.adventurexpbackend.service.BookingService;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,19 +28,38 @@ public class BookingServiceTest {
     private BookingRepository bookingRepository;
 
     @Mock
+    private ActivityRepository activityRepository;
+
+    @Mock
+    private EquipmentRepository equipmentRepository;
+
+    @Mock
+    private InitData initData;
+
+    @InjectMocks
     private ActivityService activityService;
 
     @InjectMocks
     private BookingService bookingService;
 
+    private List<Activity> activities;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        activities = new ArrayList<>();
+        when(activityRepository.findAll()).thenReturn(activities);
+        activities = activityService.getAllActivities();
+        System.out.println("Debug: Activities:");
+        System.out.println(" " + activities);
     }
 
     @Test
     public void testBook_SuccessfulBooking() {
-        Activity activity = new Activity();
+        if (activities.isEmpty()) {
+            fail("No activities available for testing");
+        }
+        Activity activity = activities.get(0); // Assume the first activity is used
         activity.setPersonsMax(10);
 
         Booking booking = new Booking();
@@ -53,7 +76,10 @@ public class BookingServiceTest {
 
     @Test
     public void testBook_MaxParticipantsExceeded() {
-        Activity activity = new Activity();
+        if (activities.isEmpty()) {
+            fail("No activities available for testing");
+        }
+        Activity activity = activities.get(0); // Assume the first activity is used
         activity.setPersonsMax(10);
 
         Booking existingBooking = new Booking();
@@ -77,7 +103,10 @@ public class BookingServiceTest {
 
     @Test
     public void testGetAvailableTimes_NoBookings() {
-        Activity activity = new Activity();
+        if (activities.isEmpty()) {
+            fail("No activities available for testing");
+        }
+        Activity activity = activities.get(0); // Assume the first activity is used
         activity.setOpeningTime(LocalTime.of(9, 0));
         activity.setClosingTime(LocalTime.of(17, 0));
         activity.setTimeSlotInterval(60);
@@ -93,7 +122,10 @@ public class BookingServiceTest {
 
     @Test
     public void testGetAvailableTimes_WithBookings() {
-        Activity activity = new Activity();
+        if (activities.isEmpty()) {
+            fail("No activities available for testing");
+        }
+        Activity activity = activities.get(0); // Assume the first activity is used
         activity.setOpeningTime(LocalTime.of(9, 0));
         activity.setClosingTime(LocalTime.of(17, 0));
         activity.setTimeSlotInterval(60);
