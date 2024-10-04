@@ -25,12 +25,15 @@ public class BookingService {
 
     // ----------------- Operations ---------------------
 
-    public Booking book(Activity activity, LocalDate date, LocalTime startTime, int personsAmount) {
-        // steps:
-        // 1. check if the activity is available at the given date and time
-        // 1a.
+    public Booking book(Booking booking) {
+        //return createBooking(booking);
+        boolean isBookingCreated = createBooking(booking);
 
-
+        if (isBookingCreated) {
+            return booking;
+        }else{
+            return null; //return null if booking was denied
+        }
     }
 
     public List<LocalTime[]> getAvailableTimes(Activity activity, LocalDate date, int personsAmount) {
@@ -59,8 +62,20 @@ public class BookingService {
 
     // ----------------- CRUD Operations ---------------------
 
-    private Booking createBooking(Booking booking) {
-        return bookingRepository.save(booking);
+    public boolean createBooking(Booking booking) {
+        Activity activity = booking.getActivity();
+        int maxParticipants = activity.getPersonsMax();
+
+        List<Booking> currentBookings = bookingRepository.findByActivity(activity);
+
+        int totalCurrentParticipants = currentBookings.stream().mapToInt(Booking::getPersonsAmount).sum();
+
+        if (totalCurrentParticipants + booking.getPersonsAmount() > maxParticipants) {
+            return false;
+        }
+
+        bookingRepository.save(booking);
+        return true;
     }
 
     public Booking getBookingById(Long id) {

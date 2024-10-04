@@ -20,6 +20,8 @@ public class Booking {
     @JoinColumn(name = "activity", referencedColumnName = "id")
     Activity activity;
 
+    private String participantName; //Name of participant who made the booking
+
     //Default constructor
     public Booking() {}
 
@@ -56,5 +58,21 @@ public class Booking {
 
     public void setPersonsAmount(int personsAmount) {
         this.personsAmount = personsAmount;
+    }
+
+    public String getParticipantName() {
+        return participantName;
+    }
+
+    public void setParticipantName(String participantName) {
+        this.participantName = participantName;
+    }
+
+    public Activity getActivity() {
+        return activity;
+    }
+
+    public void setActivity(Activity activity) {
+
     }
 }
