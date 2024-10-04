@@ -2,6 +2,7 @@ package org.example.adventurexpbackend.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -12,6 +13,7 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
     private int personsAmount;
@@ -23,17 +25,35 @@ public class Booking {
     private String participantName; //Name of participant who made the booking
 
     //Default constructor
+    public Booking() {
     public Booking() {}
 
+    }
+
+    public Booking(LocalDate date, LocalTime startTime, LocalTime endTime, int personsAmount, Activity activity) {
+        this.date = date;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.personsAmount = personsAmount;
+        this.activity = activity;
+    }
 
 
-//----------------------getters and setters------------------------
+    //----------------------getters and setters------------------------
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     public LocalTime getStartTime() {
