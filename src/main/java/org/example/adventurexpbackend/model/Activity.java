@@ -32,11 +32,13 @@ public class Activity {
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL)
     private Set<Equipment> equipmentRequiredPerPerson;
 
-    //
+    // ------------------- Constructors -------------------
     public Activity() {
+        // Default constructor for JPA
     }
 
     public  Activity (String name, String description, int pricePrPerson, int timeMaxLimit, int ageMin, int ageMax, int personsMin, int personsMax, LocalTime openingTime, LocalTime closingTime, int timeSlotInterval, List<Equipment> equipmentList, Set<Equipment> equipmentRequiredPerPerson) {
+        // Parameterized constructor to initialize the all fields
         this.name = name;
         this.description = description;
         this.pricePrPerson = pricePrPerson;

@@ -12,7 +12,7 @@ import java.util.Optional;
 public class ActivityService {
 
     @Autowired
-    private ActivityRepository activityRepository;
+    private ActivityRepository activityRepository;  // Injecting the ActivityRepository dependency
 
 
     // Create or Update activity

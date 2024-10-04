@@ -17,10 +17,13 @@ public class Equipment {
     @JoinColumn(name = "activity_id")
     private Activity activity;
 
+    // ------------------- Constructors -------------------
     public Equipment() {
+        // Default constructor for JPA
     }
 
     public Equipment(String name, boolean functional, boolean underService) {
+        // Parameterized constructor to initialize the all fields
         this.name = name;
         this.functional = functional;
         this.underService = underService;

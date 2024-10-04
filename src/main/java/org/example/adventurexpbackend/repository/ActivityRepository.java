@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
+    // Custom query to find activity by name
     Activity findByName(String name);
 }
 

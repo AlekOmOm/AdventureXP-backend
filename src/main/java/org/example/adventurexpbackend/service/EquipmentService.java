@@ -11,7 +11,7 @@ import java.util.Optional;
 public class EquipmentService {
 
     @Autowired
-    private EquipmentRepository equipmentRepository;
+    private EquipmentRepository equipmentRepository; // Injecting the EquipmentRepository dependency
 
     // Create or Update equipment
     public Equipment saveEquipment(Equipment equipment) {
