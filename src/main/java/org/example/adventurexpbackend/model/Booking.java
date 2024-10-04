@@ -26,7 +26,7 @@ public class Booking {
 
     //Default constructor
     public Booking() {
-    public Booking() {}
+
 
     }
 

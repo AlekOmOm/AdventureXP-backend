@@ -44,7 +44,7 @@ public class BookingService {
 
         for (Booking booking : bookingsAtDate) {
 
-            List<LocalTime[]> bookingTimeSlots = getTimeSlots(booking.getStartTime(), booking.getEndTime(), booking.activity.getTimeSlotInterval());
+            List<LocalTime[]> bookingTimeSlots = getTimeSlots(booking.getStartTime(), booking.getEndTime(), booking.getActivity().getTimeSlotInterval());
 
             for (LocalTime[] bookingTimeSlot : bookingTimeSlots) {
                 for (LocalTime[] availableTimeSlot : availableTimeSlots) {
