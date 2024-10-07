@@ -12,17 +12,22 @@ public class EquipmentService {
 
     private final EquipmentRepository equipmentRepository;
 
-    // Method to get all equipments
-    public List<Equipment> getAllEquipment() {
-        return equipmentRepository.findAll();
+
     public EquipmentService(EquipmentRepository equipmentRepository) {
         this.equipmentRepository = equipmentRepository;
     }
 
+
+    // Method to get all equipments
+    public List<Equipment> getAllEquipment() {
+        return equipmentRepository.findAll();
+    }
+
+
     // Method to mark equipment as functionall
     public String markAsFunctional(Long equipmentId) {
         Optional<Equipment> optionalEquipment = equipmentRepository.findById(equipmentId);
-    // CRUD operations
+        // CRUD operations
 
         if (optionalEquipment.isPresent()) {
             Equipment equipment = optionalEquipment.get();
@@ -33,7 +38,10 @@ public class EquipmentService {
             return "Error: Equipment with ID " + equipmentId + " not found.";
         }
 
-    public Equipment save(Equipment equipment) {
+
+    }
+
+    public Equipment save (Equipment equipment){
         return equipmentRepository.save(equipment);
     }
 }
