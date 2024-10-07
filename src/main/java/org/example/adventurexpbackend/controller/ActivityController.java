@@ -19,9 +19,9 @@ public class ActivityController {
     @Autowired
     private ActivityService activityService;
 
-    // Endpoint to create or update an activity
+    // Endpoint to create a new activity
     @PostMapping
-    public ResponseEntity<Activity> createOrUpdateActivity(@RequestBody Activity activity) {
+    public ResponseEntity<Activity> createActivity(@RequestBody Activity activity) {
         Activity savedActivity = activityService.saveActivity(activity);
         return ResponseEntity.ok(savedActivity);
     }
@@ -31,6 +31,18 @@ public class ActivityController {
     public ResponseEntity<List<Activity>>getAllActivities(){
         List<Activity> activities = activityService.getAllActivities();
         return ResponseEntity.ok(activities);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Activity> updateActivity(@PathVariable Long id, @RequestBody Activity activity) {
+        Optional<Activity> existingActivity = activityService.getActivityById(id);
+        if (existingActivity.isPresent()) {
+            activity.setId(id);
+            Activity updatedActivity = activityService.saveActivity(activity);
+            return ResponseEntity.ok(updatedActivity);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     // Endpoint to retrieve an activity by id
