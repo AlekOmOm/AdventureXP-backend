@@ -16,19 +16,29 @@ public class InitDataEquipment {
     private final List<Equipment> paintballEquipmentList = new ArrayList<>(List.of(
             new Equipment("Paintball gun", true, false, null),
             new Equipment("Paintball mask", true, false, null),
-            new Equipment("Paintball suit", true, false, null)
+            new Equipment("Paintball suit", true, false, null),
+            new Equipment("Paintball gun", false, false, null),
+            new Equipment("Paintball mask", false, false, null),
+            new Equipment("Paintball suit", false, false, null)
     ));
     private final List<Equipment> climbingEquipmentList = new ArrayList<>(List.of(
             new Equipment("Climbing shoes", true, false, null),
             new Equipment("Climbing harness", true, false, null),
-            new Equipment("Climbing chalk", true, false, null)
+            new Equipment("Climbing chalk", true, false, null),
+            new Equipment("Climbing shoes", false, false, null),
+            new Equipment("Climbing harness", false, false, null),
+            new Equipment("Climbing chalk", false, false, null)
     ));
     private final List<Equipment> goKartEquipmentList = new ArrayList<>(
             List.of(
                     new Equipment("Go-kart car", true, false, null),
                     new Equipment("Go-kart helmet", true, false, null),
                     new Equipment("Go-kart suit", true, false, null),
-                    new Equipment("Go-kart gloves", true, false, null)
+                    new Equipment("Go-kart gloves", true, false, null),
+                    new Equipment("Go-kart car", false, false, null),
+                    new Equipment("Go-kart helmet", false, false, null),
+                    new Equipment("Go-kart suit", false, false, null),
+                    new Equipment("Go-kart gloves", false, false, null)
             ));
 
     @Autowired
