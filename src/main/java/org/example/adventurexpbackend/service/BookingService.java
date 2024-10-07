@@ -39,15 +39,16 @@ public class BookingService {
 
     public List<AvailableTimeSlot> getAvailableTimes(Activity activity, LocalDate date, int personsAmount) {
         List<Booking> bookingsAtDate = getBookingsByDate(activity, date);
-        List<AvailableTimeSlot> availableTimeSlots = getTimeSlots(activity.getOpeningTime(), activity.getClosingTime(), activity.getTimeSlotInterval());
+        List<AvailableTimeSlot> availableTimeSlots = getTimeSlots(activity.getOpeningTime(), activity.getClosingTime(), activity.getTimeSlotInterval(), activity.getPersonsMax(), personsAmount);
 
         for (Booking booking : bookingsAtDate) {
-            List<AvailableTimeSlot> bookingTimeSlots = getTimeSlots(booking.getStartTime(), booking.getEndTime(), booking.getActivity().getTimeSlotInterval());
+            List<AvailableTimeSlot> bookingTimeSlots = getTimeSlots(booking.getStartTime(), booking.getEndTime(), booking.getActivity().getTimeSlotInterval(), booking.getActivity().getPersonsMax(), booking.getPersonsAmount());
 
             for (AvailableTimeSlot bookingTimeSlot : bookingTimeSlots) {
                 availableTimeSlots.removeIf(availableTimeSlot ->
                         availableTimeSlot.getStartTime().isAfter(bookingTimeSlot.getStartTime()) &&
-                                availableTimeSlot.getEndTime().isBefore(bookingTimeSlot.getEndTime())
+                                availableTimeSlot.getEndTime().isBefore(bookingTimeSlot.getEndTime()) &&
+                                    availableTimeSlot.getAvailableSeats() < bookingTimeSlot.getAvailableSeats()
                 );
             }
         }
@@ -55,11 +56,11 @@ public class BookingService {
         return availableTimeSlots;
     }
 
-    private static List<AvailableTimeSlot> getTimeSlots(LocalTime startTime, LocalTime endTime, int timeSlotInterval) {
+    private static List<AvailableTimeSlot> getTimeSlots(LocalTime startTime, LocalTime endTime, int timeSlotInterval, int activityMaxParticipants, int bookingParticipants) {
         List<AvailableTimeSlot> timeSlots = new ArrayList<>();
         while (startTime.isBefore(endTime)) {
             LocalTime slotEndTime = startTime.plusMinutes(timeSlotInterval);
-            timeSlots.add(new AvailableTimeSlot(startTime, slotEndTime));
+            timeSlots.add(new AvailableTimeSlot(startTime, slotEndTime, activityMaxParticipants, bookingParticipants));
             startTime = slotEndTime;
         }
         return timeSlots;
