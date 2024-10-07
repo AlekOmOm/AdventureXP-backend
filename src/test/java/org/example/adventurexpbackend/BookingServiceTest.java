@@ -1,6 +1,7 @@
 package org.example.adventurexpbackend;
 
 import org.example.adventurexpbackend.config.initData.InitData;
+import org.example.adventurexpbackend.dto.AvailableTimeSlot;
 import org.example.adventurexpbackend.model.Activity;
 import org.example.adventurexpbackend.model.Booking;
 import org.example.adventurexpbackend.repository.ActivityRepository;
@@ -115,7 +116,7 @@ public class BookingServiceTest {
 
         when(bookingRepository.findByActivity(activity)).thenReturn(new ArrayList<>());
 
-        List<LocalTime[]> availableTimes = bookingService.getAvailableTimes(activity, date, 5);
+        List<AvailableTimeSlot> availableTimes = bookingService.getAvailableTimes(activity, date, 5);
 
         assertEquals(8, availableTimes.size());
     }
@@ -142,7 +143,7 @@ public class BookingServiceTest {
 
         when(bookingRepository.findByActivity(activity)).thenReturn(bookingsAtDate);
 
-        List<LocalTime[]> availableTimes = bookingService.getAvailableTimes(activity, date, 5);
+        List<AvailableTimeSlot> availableTimes = bookingService.getAvailableTimes(activity, date, 5);
 
         assertEquals(7, availableTimes.size());
     }

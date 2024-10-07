@@ -28,31 +28,26 @@ public class InitDataActivity {
     }
 
     protected List<Activity> getActivities() {
-        List<Equipment> paintballEquipmentList = initDataEquipment.getPaintBallEquipmentList();
-        List<Equipment> climbingEquipmentList = initDataEquipment.getClimbingEquipmentList();
-        List<Equipment> goKartEquipmentList = initDataEquipment.getGoKartEquipmentList();
 
         List<Activity> activities = new ArrayList<>(List.of(
-                new Activity("Paintball", "Paintball is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18,0), 2, paintballEquipmentList, initDataEquipment.getPaintballEquipmentTypes()),
-                new Activity("Climbing", "Climbing is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18,0), 2, climbingEquipmentList, initDataEquipment.getClimbingEquipmentTypes()),
-                new Activity("Go-kart", "Go-kart is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18,0), 2, goKartEquipmentList, initDataEquipment.getGoKartEquipmentTypes())
+                new Activity("Paintball", "Paintball is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18,0), 2, initDataEquipment.getPaintBallEquipmentList(), initDataEquipment.getPaintballEquipmentTypes()),
+                new Activity("Climbing", "Climbing is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18,0), 2, initDataEquipment.getClimbingEquipmentList(), initDataEquipment.getClimbingEquipmentTypes()),
+                new Activity("Go-kart", "Go-kart is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18,0), 2, initDataEquipment.getGoKartEquipmentList(), initDataEquipment.getGoKartEquipmentTypes())
         ));
 
+
+        // Set activity in equipment and equipment types
         for (Activity activity : activities) {
             for (Equipment equipment : activity.getEquipmentList()) {
                 equipment.setActivity(activity);
             }
             for (EquipmentType equipmentType : activity.getEquipmentTypes()) {
-                if (activity.getName().equals("Paintball")) {
-                    activity.setEquipmentTypes(initDataEquipment.getPaintballEquipmentTypes());
-                } else if (activity.getName().equals("Climbing")) {
-                    activity.setEquipmentTypes(initDataEquipment.getClimbingEquipmentTypes());
-                } else if (activity.getName().equals("Go-kart")) {
-                    activity.setEquipmentTypes(initDataEquipment.getGoKartEquipmentTypes());
-                }
+                equipmentType.setActivity(activity);
             }
         }
 
+        System.out.println("Debug: getActivities");
+        System.out.println(" Activities: " + activities);
         return activities;
     }
 
