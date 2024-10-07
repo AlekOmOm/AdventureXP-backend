@@ -17,12 +17,12 @@ public class Booking {
     private LocalTime startTime;
     private LocalTime endTime;
     private int personsAmount;
+    private String participantName; //Name of participant who made the booking
 
     @ManyToOne
     @JoinColumn(name = "activity", referencedColumnName = "id")
     Activity activity;
 
-    private String participantName; //Name of participant who made the booking
 
     //Default constructor
     public Booking() {
@@ -30,7 +30,8 @@ public class Booking {
 
     }
 
-    public Booking(LocalDate date, LocalTime startTime, LocalTime endTime, int personsAmount, Activity activity) {
+    public Booking(String participantName,LocalDate date, LocalTime startTime, LocalTime endTime, int personsAmount, Activity activity) {
+        this.participantName = participantName;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;

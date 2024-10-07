@@ -1,4 +1,4 @@
-package org.example.adventurexpbackend.config.initData;
+package org.example.adventurexpbackend.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
