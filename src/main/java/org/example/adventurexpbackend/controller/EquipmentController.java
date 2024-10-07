@@ -19,7 +19,7 @@ public class EquipmentController {
     // Endpoint to create or update an equipment
     @PostMapping
     public ResponseEntity<Equipment>createOrUpdateEquipment(@RequestBody Equipment equipment){
-        Equipment savedEquipment = equipmentService.saveEquipment(equipment);
+        Equipment savedEquipment = equipmentService.save(equipment);
         return ResponseEntity.ok(savedEquipment);
     }
 
