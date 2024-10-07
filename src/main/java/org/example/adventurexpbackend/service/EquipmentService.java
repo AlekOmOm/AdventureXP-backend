@@ -10,11 +10,16 @@ import java.util.Optional;
 @Service
 public class EquipmentService {
 
-    @Autowired
-    private EquipmentRepository equipmentRepository; // Injecting the EquipmentRepository dependency
+    private final EquipmentRepository equipmentRepository;
 
-    // Create or Update equipment
-    public Equipment saveEquipment(Equipment equipment) {
+    public EquipmentService(EquipmentRepository equipmentRepository) {
+        this.equipmentRepository = equipmentRepository;
+    }
+
+    // CRUD operations
+
+
+    public Equipment save(Equipment equipment) {
         return equipmentRepository.save(equipment);
     }
 
