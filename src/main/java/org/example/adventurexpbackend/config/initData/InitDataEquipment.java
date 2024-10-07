@@ -97,6 +97,7 @@ public class InitDataEquipment {
         for (EquipmentType equipmentType : getPaintballEquipmentTypes()) {
             equipmentList.add(new Equipment(equipmentType.getName(), true, false, null, equipmentType));
         }
+        equipmentList.add(new Equipment("Paintball gun", false, false, null,new EquipmentType("Paintball gun")));
         return equipmentList;
     }
 

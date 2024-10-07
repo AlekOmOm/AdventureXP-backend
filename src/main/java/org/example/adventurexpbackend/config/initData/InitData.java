@@ -11,6 +11,7 @@ public class InitData implements CommandLineRunner {
     private final InitDataEquipment initDataEquipment;
     private final InitDataBooking initDataBooking;
 
+
     @Autowired
     public InitData(InitDataActivity initDataActivity, InitDataEquipment initDataEquipment, InitDataBooking initDataBooking) {
         this.initDataActivity = initDataActivity;
