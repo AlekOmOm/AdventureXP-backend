@@ -72,6 +72,8 @@ public class BookingService {
         Activity activity = activityService.getActivity(booking.getActivity());
 
         if (activity == null) {
+            System.out.println("DEBUG: BookingService.createBooking");
+            System.out.println(" Activity not found");
             return false;
         }
 
