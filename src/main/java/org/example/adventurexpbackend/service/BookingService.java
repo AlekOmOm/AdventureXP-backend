@@ -81,6 +81,14 @@ public class BookingService {
 
         List<AvailableTimeSlot> availableTimeSlots = getAvailableTimes(activity, booking.getDate(), booking.getPersonsAmount());
 
+        int maxParticipants = activity.getPersonsMax();
+        List<Booking> currentBookings = bookingRepository.findByActivity(activity);
+        int totalCurrentParticipants = currentBookings.stream().mapToInt(Booking::getPersonsAmount).sum();
+
+        if (booking.getPersonsAmount() > maxParticipants) {
+            return false;
+        }
+
         // if booking time is within available time slots
        // for (AvailableTimeSlot availableTimeSlot : availableTimeSlots) {
          //   if (booking.getStartTime().isAfter(availableTimeSlot.getStartTime()) && booking.getEndTime().isBefore(availableTimeSlot.getEndTime())) {
