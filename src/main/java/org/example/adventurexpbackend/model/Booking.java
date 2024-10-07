@@ -93,6 +93,20 @@ public class Booking {
     }
 
     public void setActivity(Activity activity) {
+        this.activity = activity;
+    }
 
+    // toString
+    @Override
+    public String toString() {
+        return "Booking{" +
+                "id=" + id +
+                ", date=" + date +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", personsAmount=" + personsAmount +
+                ", activity=" + activity +
+                ", participantName='" + participantName + '\'' +
+                '}';
     }
 }
