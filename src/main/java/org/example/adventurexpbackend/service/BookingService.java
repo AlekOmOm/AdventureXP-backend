@@ -69,18 +69,23 @@ public class BookingService {
     // ----------------- CRUD Operations ---------------------
 
     public boolean createBooking(Booking booking) {
-        Activity activity = booking.getActivity();
-        int maxParticipants = activity.getPersonsMax();
+        Activity activity = activityService.getActivity(booking.getActivity());
 
-        List<Booking> currentBookings = bookingRepository.findByActivity(activity);
-
-        int totalCurrentParticipants = currentBookings.stream().mapToInt(Booking::getPersonsAmount).sum();
-
-        if (totalCurrentParticipants + booking.getPersonsAmount() > maxParticipants) {
+        if (activity == null) {
             return false;
         }
 
-        bookingRepository.save(booking);
+        List<AvailableTimeSlot> availableTimeSlots = getAvailableTimes(activity, booking.getDate(), booking.getPersonsAmount());
+
+        // if booking time is within available time slots
+        for (AvailableTimeSlot availableTimeSlot : availableTimeSlots) {
+            if (booking.getStartTime().isAfter(availableTimeSlot.getStartTime()) && booking.getEndTime().isBefore(availableTimeSlot.getEndTime())) {
+                booking.setActivity(activity);
+                bookingRepository.save(booking);
+                return true;
+            }
+        }
+
         return true;
     }
 

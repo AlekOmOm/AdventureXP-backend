@@ -40,4 +40,12 @@ public class ActivityService {
         }
         return savedActivities;
     }
+
+    public Activity getActivity(Activity activity) {
+        if (activity.getId() != null) {
+            return activityRepository.findById(activity.getId()).orElse(null);
+        } else {
+            return activityRepository.findByName(activity.getName());
+        }
+    }
 }
