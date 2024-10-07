@@ -16,7 +16,6 @@ public class EquipmentController {
     private EquipmentService equipmentService;
 
 
-
     //get all equipment
     @GetMapping("/all")
     public ResponseEntity<List<Equipment>> getAllEquipment() {
