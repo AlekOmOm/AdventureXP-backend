@@ -13,52 +13,47 @@ import java.util.*;
 public class InitDataEquipment {
     private List<Activity> activities;
     private final EquipmentRepository equipmentRepository;
-    private final List<Equipment> paintballEquipmentList = new ArrayList<>();
-    private final List<Equipment> climbingEquipmentList = new ArrayList<>();
-    private final List<Equipment> goKartEquipmentList = new ArrayList<>();
+    private final List<Equipment> paintballEquipmentList = new ArrayList<>(List.of(
+            new Equipment("Paintball gun", true, false, null),
+            new Equipment("Paintball mask", true, false, null),
+            new Equipment("Paintball suit", true, false, null)
+    ));
+    private final List<Equipment> climbingEquipmentList = new ArrayList<>(List.of(
+            new Equipment("Climbing shoes", true, false, null),
+            new Equipment("Climbing harness", true, false, null),
+            new Equipment("Climbing chalk", true, false, null)
+    ));
+    private final List<Equipment> goKartEquipmentList = new ArrayList<>(
+            List.of(
+                    new Equipment("Go-kart car", true, false, null),
+                    new Equipment("Go-kart helmet", true, false, null),
+                    new Equipment("Go-kart suit", true, false, null),
+                    new Equipment("Go-kart gloves", true, false, null)
+            ));
 
     @Autowired
     public InitDataEquipment(EquipmentRepository equipmentRepository) {
         this.equipmentRepository = equipmentRepository;
     }
 
-    public void saveData() {
-        equipmentRepository.saveAll(getEquipmentList());
-    }
 
     public void setActivities(List<Activity> activities) {
         this.activities = activities;
     }
 
-    public List<Equipment> getEquipmentList() {
-        List<Equipment> equipmentList = new ArrayList<>();
-        for (Activity activity : activities) {
-            int maxCapacity = activity.getPersonsMax();
-            for (int i = 0; i< maxCapacity; i++) {
-                switch (activity.getName()) {
-                    case "Paintball" -> paintballEquipmentList.addAll(getPaintballEquipmentTypeList());
-                    case "Climbing" -> climbingEquipmentList.addAll(getClimbingEquipmentTypeList());
-                    case "Go-kart" -> goKartEquipmentList.addAll(getGoKartEquipmentTypeList());
-                }
-            }
-        }
-
-        equipmentList.addAll(paintballEquipmentList);
-        equipmentList.addAll(climbingEquipmentList);
-        equipmentList.addAll(goKartEquipmentList);
-
-        return equipmentList;
-    }
 
     public List<Equipment> getPaintBallEquipmentList() {
         return paintballEquipmentList;
     }
 
     public List<Equipment> getClimbingEquipmentList() {
+
         return climbingEquipmentList;
     }
 
+
     public List<Equipment> getGoKartEquipmentList() {
+
         return goKartEquipmentList;
     }
 
@@ -95,7 +90,7 @@ public class InitDataEquipment {
 
         List<Equipment> equipmentList = new ArrayList<>();
         for (EquipmentType equipmentType : getPaintballEquipmentTypes()) {
-            equipmentList.add(new Equipment(equipmentType.getName(), true, false, null, equipmentType));
+            equipmentList.add(new Equipment(equipmentType.getName(), true, false, null));
         }
         equipmentList.add(new Equipment("Paintball gun", false, false, null,new EquipmentType("Paintball gun")));
         return equipmentList;
@@ -105,7 +100,7 @@ public class InitDataEquipment {
 
         List<Equipment> equipmentList = new ArrayList<>();
         for (EquipmentType equipmentType : getClimbingEquipmentTypes()) {
-            equipmentList.add(new Equipment(equipmentType.getName(), true, false, null, equipmentType));
+            equipmentList.add(new Equipment(equipmentType.getName(), true, false, null));
         }
         return equipmentList;
     }
@@ -114,7 +109,7 @@ public class InitDataEquipment {
 
         List<Equipment> equipmentList = new ArrayList<>();
         for (EquipmentType equipmentType : getGoKartEquipmentTypes()) {
-            equipmentList.add(new Equipment(equipmentType.getName(), true, false, null, equipmentType));
+            equipmentList.add(new Equipment(equipmentType.getName(), true, false, null));
         }
         return equipmentList;
     }

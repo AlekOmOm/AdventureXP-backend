@@ -18,20 +18,16 @@ public class Equipment {
     @JsonBackReference
     private Activity activity;
 
-    @ManyToOne
-    @JoinColumn(name = "equipment_type_id")
-    private EquipmentType equipmentType;
-
     // Constructors, getters, and setters
     public Equipment() {
     }
 
-    public Equipment(String name, boolean functional, boolean underService, Activity activity, EquipmentType equipmentType) {
+    public Equipment(String name, boolean functional, boolean underService, Activity activity) {
         this.name = name;
         this.functional = functional;
         this.underService = underService;
         this.activity = activity;
-        this.equipmentType = equipmentType;
+
     }
 
     public Long getId() {
@@ -74,11 +70,14 @@ public class Equipment {
         this.activity = activity;
     }
 
-    public EquipmentType getEquipmentType() {
-        return equipmentType;
-    }
 
-    public void setEquipmentType(EquipmentType equipmentType) {
-        this.equipmentType = equipmentType;
+    @Override
+    public String toString() {
+        return "Equipment{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", functional=" + functional +
+                ", underService=" + underService +
+                '}';
     }
 }

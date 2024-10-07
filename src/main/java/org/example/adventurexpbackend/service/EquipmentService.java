@@ -10,17 +10,19 @@ import java.util.Optional;
 @Service
 public class EquipmentService {
 
-    @Autowired
-    private EquipmentRepository equipmentRepository;
+    private final EquipmentRepository equipmentRepository;
 
     // Method to get all equipments
     public List<Equipment> getAllEquipment() {
         return equipmentRepository.findAll();
+    public EquipmentService(EquipmentRepository equipmentRepository) {
+        this.equipmentRepository = equipmentRepository;
     }
 
     // Method to mark equipment as functionall
     public String markAsFunctional(Long equipmentId) {
         Optional<Equipment> optionalEquipment = equipmentRepository.findById(equipmentId);
+    // CRUD operations
 
         if (optionalEquipment.isPresent()) {
             Equipment equipment = optionalEquipment.get();
@@ -30,5 +32,8 @@ public class EquipmentService {
         } else {
             return "Error: Equipment with ID " + equipmentId + " not found.";
         }
+
+    public Equipment save(Equipment equipment) {
+        return equipmentRepository.save(equipment);
     }
 }

@@ -1,5 +1,9 @@
 package org.example.adventurexpbackend.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.*;
 import java.time.LocalTime;
 import java.util.List;
@@ -23,16 +27,13 @@ public class Activity {
     private LocalTime closingTime;
     private int timeSlotInterval;
 
-    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL)
+
+    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Equipment> equipmentList;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "activity_equipment_type",
-            joinColumns = @JoinColumn(name = "activity_id"),
-            inverseJoinColumns = @JoinColumn(name = "equipment_type_id")
-    )
+    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EquipmentType> equipmentTypes;
+
 
     // Constructors, getters, and setters
     public Activity() {
@@ -86,6 +87,7 @@ public class Activity {
         this.pricePrPerson = pricePrPerson;
     }
 
+//---------------Getters and Setters-----------------------
     public int getTimeMaxLimit() {
         return timeMaxLimit;
     }
@@ -164,5 +166,25 @@ public class Activity {
 
     public void setEquipmentTypes(Set<EquipmentType> equipmentTypes) {
         this.equipmentTypes = equipmentTypes;
+    }
+
+    @Override
+    public String toString() {
+        return "Activity{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", pricePrPerson=" + pricePrPerson +
+                ", timeMaxLimit=" + timeMaxLimit +
+                ", ageMin=" + ageMin +
+                ", ageMax=" + ageMax +
+                ", personsMin=" + personsMin +
+                ", personsMax=" + personsMax +
+                ", openingTime=" + openingTime +
+                ", closingTime=" + closingTime +
+                ", timeSlotInterval=" + timeSlotInterval +
+                ", equipmentList=" + equipmentList +
+                ", equipmentTypes=" + equipmentTypes +
+                '}';
     }
 }

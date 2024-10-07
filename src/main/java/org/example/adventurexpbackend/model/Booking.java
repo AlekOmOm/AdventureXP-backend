@@ -17,17 +17,20 @@ public class Booking {
     private LocalTime startTime;
     private LocalTime endTime;
     private int personsAmount;
+    private String participantName; //Name of participant who made the booking
 
     @ManyToOne
     @JoinColumn(name = "activity", referencedColumnName = "id")
     Activity activity;
 
-    //Default constructor
+
     public Booking() {
+
 
     }
 
-    public Booking(LocalDate date, LocalTime startTime, LocalTime endTime, int personsAmount, Activity activity) {
+    public Booking(String participantName,LocalDate date, LocalTime startTime, LocalTime endTime, int personsAmount, Activity activity) {
+        this.participantName = participantName;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -75,5 +78,35 @@ public class Booking {
 
     public void setPersonsAmount(int personsAmount) {
         this.personsAmount = personsAmount;
+    }
+
+    public String getParticipantName() {
+        return participantName;
+    }
+
+    public void setParticipantName(String participantName) {
+        this.participantName = participantName;
+    }
+
+    public Activity getActivity() {
+        return activity;
+    }
+
+    public void setActivity(Activity activity) {
+        this.activity = activity;
+    }
+
+    //----------------------------------------------------------------
+    @Override
+    public String toString() {
+        return "Booking{" +
+                "id=" + id +
+                ", date=" + date +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", personsAmount=" + personsAmount +
+                ", activity=" + activity +
+                ", participantName='" + participantName + '\'' +
+                '}';
     }
 }

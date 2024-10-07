@@ -4,60 +4,48 @@ import org.example.adventurexpbackend.model.Activity;
 import org.example.adventurexpbackend.model.Equipment;
 import org.example.adventurexpbackend.model.EquipmentType;
 import org.example.adventurexpbackend.repository.ActivityRepository;
-import org.example.adventurexpbackend.repository.EquipmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class ActivityService {
 
     private final ActivityRepository activityRepository;
-    private final EquipmentRepository equipmentRepository;
 
     @Autowired
-    public ActivityService(ActivityRepository activityRepository, EquipmentRepository equipmentRepository) {
+    public ActivityService(ActivityRepository activityRepository) {
         this.activityRepository = activityRepository;
-        this.equipmentRepository = equipmentRepository;
     }
 
+    @Transactional
+    public Activity saveActivity(Activity activity) {
+        activity.getEquipmentList().forEach(equipment -> equipment.setActivity(activity));
+        activity.getEquipmentTypes().forEach(equipmentType -> equipmentType.setActivity(activity));
+        return activityRepository.save(activity);
+    }
+
+    public List<Activity> getAllActivities() {
+        return activityRepository.findAll();
+    }
+
+    @Transactional
     public List<Activity> saveAllActivities(List<Activity> activities) {
-        List<Activity> activityList = new ArrayList<>();
+        List<Activity> savedActivities = new ArrayList<>();
         for (Activity activity : activities) {
-            activity.setEquipmentList(equipmentRepository.saveAll(activity.getEquipmentList()));
-            activityList.add(activityRepository.save(activity));
+            savedActivities.add(saveActivity(activity)); // Transactional
         }
-        return activityList;
+        return savedActivities;
     }
 
-    public void addEquipmentToActivity(Activity activity, Equipment equipment) {
-        Set<EquipmentType> requiredTypes = activity.getEquipmentTypes();
-        if (requiredTypes.contains(equipment.getEquipmentType())) {
-            equipment.setActivity(activity);
-            equipmentRepository.save(equipment);
+    public Activity getActivity(Activity activity) {
+        if (activity.getId() != null) {
+            return activityRepository.findById(activity.getId()).orElse(null);
         } else {
-            throw new IllegalArgumentException("Equipment type not allowed for this activity");
+            return activityRepository.findByName(activity.getName());
         }
-    }
-
-    // addEquipmentTypeToctivity method
-    public void addEquipmentTypeToActivity(Activity activity, EquipmentType equipmentType) {
-        Set<EquipmentType> requiredTypes = activity.getEquipmentTypes();
-        requiredTypes.add(equipmentType);
-        activity.setEquipmentTypes(requiredTypes);
-        activityRepository.save(activity);
-    }
-
-    // removeEquipmentTypeFromActivity method
-
-    public void removeEquipmentTypeFromActivity(Activity activity, EquipmentType equipmentType) {
-        Set<EquipmentType> requiredTypes = activity.getEquipmentTypes();
-        requiredTypes.remove(equipmentType);
-        activity.setEquipmentTypes(requiredTypes);
-        activityRepository.save(activity);
     }
 }
-
