@@ -13,4 +13,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Iterable<Booking> findByDate(LocalDate date);
 
     List<Booking> findByActivity(Activity activity);
+
+
 }
