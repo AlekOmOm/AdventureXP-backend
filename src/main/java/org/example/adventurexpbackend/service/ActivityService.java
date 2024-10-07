@@ -20,6 +20,8 @@ public class ActivityService {
     public ActivityService(ActivityRepository activityRepository) {
         this.activityRepository = activityRepository;
     }
+
+    // ------------------- Create -------------------
     @Transactional
     public Activity saveActivity(Activity activity) {
         activity.getEquipmentList().forEach(equipment -> equipment.setActivity(activity));
@@ -27,9 +29,6 @@ public class ActivityService {
         return activityRepository.save(activity);
     }
 
-    public List<Activity> getAllActivities() {
-        return activityRepository.findAll();
-    }
 
     @Transactional
     public List<Activity> saveAllActivities(List<Activity> activities) {
@@ -38,6 +37,24 @@ public class ActivityService {
             savedActivities.add(saveActivity(activity)); // Transactional
         }
         return savedActivities;
+    }
+
+
+    // ------------------- Read -------------------
+    public List<Activity> getAllActivities() {
+        return activityRepository.findAll();
+    }
+
+    public Optional<Activity> getActivity(Activity activity) {
+
+        if (activity.getId() != null) {
+            return getActivityById(activity.getId());
+        } else {
+            return getActivityByName(activity.getName());
+        }
+
+    }
+
     // Retrieve activity by id
     public Optional<Activity> getActivityById(Long id) {
         return activityRepository.findById(id);
@@ -48,11 +65,26 @@ public class ActivityService {
         return Optional.ofNullable(activityRepository.findByName(name));
     }
 
-    // Delete activity by id
+
+    // ------------------- Update -------------------
+        // if exists update, if not create
+
+    @Transactional
+    public Activity updateActivity(Activity activity) {
+        Optional<Activity> updatedActivity = getActivity(activity);
+        if (updatedActivity.isPresent()) {
+            deleteActivityById(activity.getId());
+        }
+        return saveActivity(activity);
+    }
+
+
+    // ------------------- Delete -------------------
+        // Delete activity by id
     public void deleteActivityById(Long id) {
         activityRepository.deleteById(id);
     }
 
-}
+
 
 }
