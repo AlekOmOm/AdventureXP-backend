@@ -24,6 +24,8 @@ public class BookingRESTController {
 
     @PostMapping
     public ResponseEntity<String> createBooking(@RequestBody Booking booking) {
+        System.out.println("Received booking request:" + booking);
+
         boolean isBookingCreated = bookingService.createBooking(booking);
 
         if (isBookingCreated) {

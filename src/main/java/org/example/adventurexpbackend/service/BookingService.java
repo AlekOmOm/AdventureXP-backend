@@ -71,21 +71,26 @@ public class BookingService {
     public boolean createBooking(Booking booking) {
         Activity activity = activityService.getActivity(booking.getActivity());
 
+        System.out.println(activity);
+
         if (activity == null) {
             return false;
         }
 
+        booking.setActivity(activity);
+
         List<AvailableTimeSlot> availableTimeSlots = getAvailableTimes(activity, booking.getDate(), booking.getPersonsAmount());
 
         // if booking time is within available time slots
-        for (AvailableTimeSlot availableTimeSlot : availableTimeSlots) {
-            if (booking.getStartTime().isAfter(availableTimeSlot.getStartTime()) && booking.getEndTime().isBefore(availableTimeSlot.getEndTime())) {
-                booking.setActivity(activity);
-                bookingRepository.save(booking);
-                return true;
-            }
-        }
+       // for (AvailableTimeSlot availableTimeSlot : availableTimeSlots) {
+         //   if (booking.getStartTime().isAfter(availableTimeSlot.getStartTime()) && booking.getEndTime().isBefore(availableTimeSlot.getEndTime())) {
+           //     booking.setActivity(activity);
+             //   bookingRepository.save(booking);
+               // return true;
+            //}
+        //}
 
+        bookingRepository.save(booking);
         return true;
     }
 
