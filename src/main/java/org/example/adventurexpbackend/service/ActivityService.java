@@ -25,6 +25,13 @@ public class ActivityService {
     }
 
     public List<Activity> getAllActivities() {
+        List <Activity> activities = new ArrayList<>();
+        System.out.println("Debug: Activity:");
+        for (Activity activity : activityRepository.findAll()) {
+            activities.add(activity);
+
+            System.out.println( " " + activity);
+        }
         return activityRepository.findAll();
     }
 
@@ -45,4 +52,7 @@ public class ActivityService {
         }
     }
 
+    public void delete(Activity activity) {
+        activityRepository.delete(activity);
+    }
 }

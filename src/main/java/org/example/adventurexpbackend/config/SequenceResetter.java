@@ -29,4 +29,6 @@ public class SequenceResetter {
         resetAutoIncrement("equipment_type");
         resetAutoIncrement("booking");
     }
+
+
 }

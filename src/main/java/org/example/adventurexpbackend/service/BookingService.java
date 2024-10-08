@@ -111,5 +111,14 @@ public class BookingService {
         bookingRepository.deleteById(id);
     }
 
+    public void deleteActivity(Activity activity) {
+        List<Booking> bookings = bookingRepository.findByActivity(activity);
+        for (Booking booking : bookings) {
+            booking.setActivity(null); // Set activity to null to keep the booking
+            bookingRepository.save(booking);
+        }
+        activityService.delete(activity);
+    }
+
     // ----------------- Helper Methods ---------------------
 }

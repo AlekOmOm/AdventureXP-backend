@@ -55,6 +55,34 @@ public class BookingServiceTest {
         System.out.println(" " + activities);
     }
 
+    // test for delete Activity if the booking is also deleted
+    @Test
+    public void testDeleteActivity() {
+        Activity activity = new Activity();
+        activity.setId(1L);
+        activity.setName("Test Activity");
+        activity.setPersonsMin(1);
+        activity.setPersonsMax(10);
+        activity.setOpeningTime(LocalTime.of(9, 0));
+        activity.setClosingTime(LocalTime.of(17, 0));
+        activity.setTimeSlotInterval(60);
+
+        Booking booking = new Booking();
+        booking.setActivity(activity);
+        booking.setPersonsAmount(5);
+
+        List<Booking> bookings = new ArrayList<>();
+        bookings.add(booking);
+
+        when(bookingRepository.findByActivity(activity)).thenReturn(bookings);
+
+        bookingService.deleteActivity(activity);
+
+        verify(bookingRepository, times(1)).save(booking);
+        verify(activityRepository, times(1)).delete(activity);
+    }
+
+
     @Test
     public void testBook_SuccessfulBooking() {
         if (activities.isEmpty()) {
