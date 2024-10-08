@@ -22,6 +22,8 @@ public class ActivityRESTController {
     // Endpoint to create a new activity
     @PostMapping
     public ResponseEntity<Activity> createActivity(@RequestBody Activity activity) {
+        System.out.println("createActivity");
+        System.out.println(" Activity: " + activity);
         Activity savedActivity = activityService.saveActivity(activity);
         return ResponseEntity.ok(savedActivity);
     }
@@ -38,6 +40,8 @@ public class ActivityRESTController {
         Optional<Activity> existingActivity = activityService.getActivityById(id);
         if (existingActivity.isPresent()) {
             activity.setId(id);
+            activity.setEquipmentList(existingActivity.get().getEquipmentList());
+            activity.setEquipmentTypes(existingActivity.get().getEquipmentTypes());
             Activity updatedActivity = activityService.saveActivity(activity);
             return ResponseEntity.ok(updatedActivity);
         } else {

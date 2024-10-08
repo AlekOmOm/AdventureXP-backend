@@ -29,6 +29,8 @@ public class ActivityService {
         return activityRepository.save(activity);
     }
 
+
+
     public List<Activity> getAllActivities() {
         List <Activity> activities = new ArrayList<>();
         System.out.println("Debug: Activity:");
@@ -69,11 +71,9 @@ public class ActivityService {
 
 
     // ------------------- Read -------------------
-    public List<Activity> getAllActivities() {
-        return activityRepository.findAll();
-    }
 
-    public Optional<Activity> getActivity(Activity activity) {
+
+    public Optional<Activity> getActivityOpt(Activity activity) {
 
         if (activity.getId() != null) {
             return getActivityById(activity.getId());
@@ -85,7 +85,10 @@ public class ActivityService {
 
     // Retrieve activity by id
     public Optional<Activity> getActivityById(Long id) {
-        return activityRepository.findById(id);
+        System.out.println("Debug: ActivityService: getActivityById: id: " + id);
+        Optional<Activity> activity =  activityRepository.findById(id);
+        System.out.println(" activity: " + activity);
+        return activity;
     }
 
     // Retrieve activity by name
@@ -99,18 +102,52 @@ public class ActivityService {
 
     @Transactional
     public Activity updateActivity(Activity activity) {
-        Optional<Activity> updatedActivity = getActivity(activity);
-        if (updatedActivity.isPresent()) {
-            deleteActivityById(activity.getId());
+        Optional<Activity> existingActivityOpt = getActivityById(activity.getId());
+        if (existingActivityOpt.isPresent()) {
+            Activity existingActivity = getActivity(activity, existingActivityOpt);
+            existingActivity.getEquipmentList().clear();
+            existingActivity.getEquipmentList().addAll(activity.getEquipmentList());
+            existingActivity.getEquipmentTypes().clear();
+            existingActivity.getEquipmentTypes().addAll(activity.getEquipmentTypes());
+            return activityRepository.save(existingActivity);
+        } else {
+            throw new IllegalArgumentException("Activity not found");
         }
-        return saveActivity(activity);
+    }
+
+    private static Activity getActivity(Activity activity, Optional<Activity> existingActivityOpt) {
+        if (!existingActivityOpt.isPresent()) {
+            throw new IllegalArgumentException("Activity not found");
+        }
+
+        Activity existingActivity = existingActivityOpt.get();
+        existingActivity.setName(activity.getName());
+        existingActivity.setDescription(activity.getDescription());
+        existingActivity.setPricePrPerson(activity.getPricePrPerson());
+        existingActivity.setTimeMaxLimit(activity.getTimeMaxLimit());
+        existingActivity.setAgeMin(activity.getAgeMin());
+        existingActivity.setAgeMax(activity.getAgeMax());
+        existingActivity.setPersonsMin(activity.getPersonsMin());
+        existingActivity.setPersonsMax(activity.getPersonsMax());
+        existingActivity.setOpeningTime(activity.getOpeningTime());
+        existingActivity.setClosingTime(activity.getClosingTime());
+        existingActivity.setTimeSlotInterval(activity.getTimeSlotInterval());
+        existingActivity.setEquipmentList(activity.getEquipmentList());
+        existingActivity.setEquipmentTypes(activity.getEquipmentTypes());
+
+        return existingActivity;
     }
 
 
     // ------------------- Delete -------------------
         // Delete activity by id
     public void deleteActivityById(Long id) {
-        activityRepository.deleteById(id);
+        Optional<Activity> existingActivityOpt = activityRepository.findById(id);
+        if (existingActivityOpt.isPresent()) {
+            Activity existingActivity = existingActivityOpt.get();
+
+            activityRepository.delete(existingActivity);
+        }
     }
 
 
