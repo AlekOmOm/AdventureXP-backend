@@ -4,6 +4,7 @@ import org.example.adventurexpbackend.model.Equipment;
 import org.example.adventurexpbackend.repository.EquipmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
@@ -11,9 +12,12 @@ import java.util.Optional;
 public class EquipmentService {
 
     private final EquipmentRepository equipmentRepository;
+    private final RestTemplate restTemplate;
 
-    public EquipmentService(EquipmentRepository equipmentRepository) {
+    @Autowired
+    public EquipmentService(EquipmentRepository equipmentRepository, RestTemplate restTemplate) {
         this.equipmentRepository = equipmentRepository;
+        this.restTemplate = restTemplate;
     }
 
     // CRUD operations

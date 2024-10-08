@@ -13,19 +13,24 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.example.adventurexpbackend.dto.AvailableTimeSlot;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class BookingService {
 
     private final BookingRepository bookingRepository;
     private final ActivityService activityService;
+    private final RestTemplate restTemplate;
+
     private final SequenceResetter sequenceResetter;
 
     @Autowired
     public BookingService(BookingRepository bookingRepository, ActivityService activityService, SequenceResetter sequenceResetter) {
+    public BookingService(BookingRepository bookingRepository, ActivityService activityService, RestTemplate restTemplate) {
         this.bookingRepository = bookingRepository;
         this.activityService = activityService;
         this.sequenceResetter = sequenceResetter;
+        this.restTemplate = restTemplate;
     }
 
     // ----------------- Operations ---------------------

@@ -2,6 +2,7 @@ package org.example.adventurexpbackend.controller;
 
 
 import org.example.adventurexpbackend.model.Activity;
+import org.example.adventurexpbackend.model.Equipment;
 import org.example.adventurexpbackend.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -32,12 +33,13 @@ public class ActivityRESTController {
     @GetMapping
     public ResponseEntity<List<Activity>>getAllActivities(){
         List<Activity> activities = activityService.getAllActivities();
+        System.out.println(activities);
         return ResponseEntity.ok(activities);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Activity> updateActivity(@PathVariable Long id, @RequestBody Activity activity) {
-        Optional<Activity> existingActivity = activityService.getActivityById(id);
+        Optional<Activity> existingActivity = Optional.ofNullable(activityService.getActivity(activity));
         if (existingActivity.isPresent()) {
             activity.setId(id);
             activity.setEquipmentList(existingActivity.get().getEquipmentList());
@@ -49,24 +51,40 @@ public class ActivityRESTController {
         }
     }
 
+    @PutMapping("/{id}/equipment")
+    public ResponseEntity<Void> updateEquipmentList(@PathVariable Long id, @RequestBody List<Equipment> newEquipmentList) {
+        try {
+            activityService.updateEquipmentList(id, newEquipmentList);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     // Endpoint to retrieve an activity by id
     @GetMapping("/{id}")
     public ResponseEntity<Activity> getActivityById(@PathVariable Long id) {
-        Optional<Activity> activity = activityService.getActivityById(id);
-        return activity.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        Activity activity = new Activity();
+        activity.setId(id);
+        Optional<Activity> existingActivity = Optional.ofNullable(activityService.getActivity(activity));
+        return existingActivity.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // Endpoint to retrieve an activity by name
     @GetMapping("/name/{name}")
     public ResponseEntity<Activity> getActivityByName(@PathVariable String name) {
-        Optional<Activity> activity = activityService.getActivityByName(name);
-        return activity.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        Activity activity = new Activity();
+        activity.setName(name);
+        Optional<Activity> existingActivity = Optional.ofNullable(activityService.getActivity(activity));
+        return existingActivity.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // Endpoint to delete an activity by id
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteActivityById(@PathVariable Long id) {
-        activityService.deleteActivityById(id);
+        Activity activity = new Activity();
+        activity.setId(id);
+        activityService.delete(activity);
         return ResponseEntity.noContent().build();
     }
 

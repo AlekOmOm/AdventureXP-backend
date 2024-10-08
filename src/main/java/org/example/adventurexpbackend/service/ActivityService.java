@@ -2,7 +2,10 @@ package org.example.adventurexpbackend.service;
 
 import org.example.adventurexpbackend.config.SequenceResetter;
 import org.example.adventurexpbackend.model.Activity;
+import org.example.adventurexpbackend.model.Booking;
+import org.example.adventurexpbackend.model.Equipment;
 import org.example.adventurexpbackend.repository.ActivityRepository;
+import org.example.adventurexpbackend.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,11 +19,14 @@ public class ActivityService {
 
     private final ActivityRepository activityRepository;
     private final SequenceResetter sequenceResetter;
+    private final BookingRepository bookingRepository;
 
     @Autowired
+    public ActivityService(ActivityRepository activityRepository, BookingRepository bookingRepository) {
     public ActivityService(ActivityRepository activityRepository, SequenceResetter sequenceResetter) {
         this.activityRepository = activityRepository;
         this.sequenceResetter = sequenceResetter;
+        this.bookingRepository = bookingRepository;
     }
 
     // ------------------- Create -------------------
@@ -28,8 +34,6 @@ public class ActivityService {
     public Activity saveActivity(Activity activity) {
         return activityRepository.save(activity);
     }
-
-
 
     public List<Activity> getAllActivities() {
         List <Activity> activities = new ArrayList<>();
@@ -65,6 +69,19 @@ public class ActivityService {
         }
     }
 
+    public void delete(Activity activity) {
+        List<Booking> bookings = bookingRepository.findByActivity(activity);
+        bookingRepository.deleteAll(bookings);
+        activityRepository.delete(activity);
+    }
+
+    @Transactional
+    public void updateEquipmentList(Long activityId, List<Equipment> newEquipmentList) {
+        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new IllegalArgumentException("Invalid activity id"));
+        activity.getEquipmentList().clear();
+        activity.getEquipmentList().addAll(newEquipmentList);
+        activityRepository.save(activity);
+    }
     public void delete(Activity activity) {
         activityRepository.delete(activity);
     }

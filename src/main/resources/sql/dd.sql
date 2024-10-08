@@ -1,7 +1,7 @@
 
 
 -- Create the activities table
-CREATE TABLE activities (
+CREATE TABLE activity (
                             id LONG AUTO_INCREMENT PRIMARY KEY,
                             name VARCHAR(255) NOT NULL,
                             description TEXT,

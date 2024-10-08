@@ -1,7 +1,7 @@
 
 -- Clear existing data
 DELETE FROM equipment;
-DELETE FROM activities;
+DELETE FROM activity;
 
 -- Reset auto-increment counters
 ALTER TABLE activities AUTO_INCREMENT = 1;
@@ -15,7 +15,7 @@ INSERT INTO equipment (name, functional, under_service) VALUES
 ('Sumo Suit', true, false);
 
 -- Insert test data for Activity
-INSERT INTO activities (name, description, price_pr_person, time_max_limit, age_min, age_max, persons_min, persons_max, opening_time, closing_time, time_slot_interval) VALUES
+INSERT INTO activity (name, description, price_pr_person, time_max_limit, age_min, age_max, persons_min, persons_max, opening_time, closing_time, time_slot_interval) VALUES
 ('Paintball', 'Exciting paintball activity', 200, 120, 12, 50, 4, 20, '09:00', '18:00', 30),
 ('Go-Kart Racing', 'Fast-paced go-kart racing', 300, 60, 10, 60, 2, 10, '10:00', '20:00', 15),
 ('Sumo Wrestling', 'Fun sumo wrestling activity', 150, 30, 8, 40, 2, 4, '11:00', '17:00', 10);
