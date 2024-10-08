@@ -1,9 +1,11 @@
 package org.example.adventurexpbackend.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
+@JsonIgnoreProperties({"activity"})
 public class Equipment {
 
     @Id
@@ -14,7 +16,7 @@ public class Equipment {
     private boolean underService;
 
 
-    // Constructors, getters, and setters
+    // ------------------- Constructors -------------------
     public Equipment() {
     }
 
@@ -24,6 +26,7 @@ public class Equipment {
         this.underService = underService;
     }
 
+    // ------------------- Getter & Setters -------------------
     public Long getId() {
         return id;
     }

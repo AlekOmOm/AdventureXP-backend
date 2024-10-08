@@ -6,21 +6,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.Optional;
 
 @Service
 public class EquipmentService {
 
     private final EquipmentRepository equipmentRepository;
+    private final RestTemplate restTemplate;
 
-
-    public EquipmentService(EquipmentRepository equipmentRepository) {
+    @Autowired
+    public EquipmentService(EquipmentRepository equipmentRepository, RestTemplate restTemplate) {
         this.equipmentRepository = equipmentRepository;
-    }
-
-
-    // Method to get all equipments
-    public List<Equipment> getAllEquipment() {
-        return equipmentRepository.findAll();
+        this.restTemplate = restTemplate;
     }
 
 
@@ -41,7 +40,28 @@ public class EquipmentService {
 
     }
 
-    public Equipment save (Equipment equipment){
+    public Equipment save(Equipment equipment) {
         return equipmentRepository.save(equipment);
     }
+
+    // Retrieve all equipment
+    public Iterable<Equipment> getAllEquipment() {
+        return equipmentRepository.findAll();
+    }
+
+    // Retrieve equipment by id
+    public Optional<Equipment> getEquipmentById(Long id) {
+        return equipmentRepository.findById(id);
+    }
+
+    // Retrieve equipment by name
+    public Optional<Equipment> getEquipmentByName(String name) {
+        return Optional.ofNullable(equipmentRepository.findByName(name));
+    }
+
+    // Delete equipment by id
+    public void deleteEquipmentById(Long id) {
+        equipmentRepository.deleteById(id);
+    }
+
 }
