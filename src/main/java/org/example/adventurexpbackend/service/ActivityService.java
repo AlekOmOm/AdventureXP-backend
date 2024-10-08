@@ -27,7 +27,6 @@ public class ActivityService {
     }
 
 
-
     public List<Activity> getAllActivities() {
         return activityRepository.findAll();
     }
@@ -49,20 +48,13 @@ public class ActivityService {
         }
     }
 
-//----------------------------------------------------------------------------------------------------------------------
-    private void loadTimeslots(TimeSlot timeSlot){
-        if (timeSlot.isAvailable()){
+    //----------------------------------------------------------------------------------------------------------------------
+    private void loadTimeslots(TimeSlot timeSlot) {
+        if (timeSlot.isAvailable()) {
             timeSlot.setAvailable(false);
         }
     }
 
-
-    //Setting the availability based on participans
-    private void updateTimeSlotAvailability(TimeSlot timeSlot) {
-        if (timeSlot.getCurrentParticipants() >= timeSlot.getMaxParticipants()) {
-            timeSlot.setAvailable(false);
-        } else {
-            timeSlot.setAvailable(true);
-        }
-    }
 }
+
+
