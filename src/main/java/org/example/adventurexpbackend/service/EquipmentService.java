@@ -36,8 +36,6 @@ public class EquipmentService {
         } else {
             return "Error: Equipment with ID " + equipmentId + " not found.";
         }
-
-
     }
 
     public Equipment save(Equipment equipment) {
