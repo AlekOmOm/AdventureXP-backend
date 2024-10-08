@@ -29,11 +29,11 @@ public class Activity {
 
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-
+    @JoinColumn(name = "activity_id")
     private List<Equipment> equipmentList;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-
+    @JoinColumn(name = "activity_id")
     private Set<EquipmentType> equipmentTypes;
 
     // ---------------Constructors----------------
