@@ -21,4 +21,12 @@ public class SequenceResetter {
     public void resetAutoIncrement(String tableName) {
         jdbcTemplate.execute("ALTER TABLE " + tableName + " AUTO_INCREMENT = 1");
     }
+
+    public void resetSequences() {
+
+        resetAutoIncrement("activity");
+        resetAutoIncrement("equipment");
+        resetAutoIncrement("equipment_type");
+        resetAutoIncrement("booking");
+    }
 }

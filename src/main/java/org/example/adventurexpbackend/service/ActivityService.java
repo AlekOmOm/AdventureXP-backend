@@ -1,8 +1,6 @@
 package org.example.adventurexpbackend.service;
 
 import org.example.adventurexpbackend.model.Activity;
-import org.example.adventurexpbackend.model.Equipment;
-import org.example.adventurexpbackend.model.EquipmentType;
 import org.example.adventurexpbackend.repository.ActivityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,8 +21,6 @@ public class ActivityService {
 
     @Transactional
     public Activity saveActivity(Activity activity) {
-        activity.getEquipmentList().forEach(equipment -> equipment.setActivity(activity));
-        activity.getEquipmentTypes().forEach(equipmentType -> equipmentType.setActivity(activity));
         return activityRepository.save(activity);
     }
 
@@ -48,4 +44,5 @@ public class ActivityService {
             return activityRepository.findByName(activity.getName());
         }
     }
+
 }

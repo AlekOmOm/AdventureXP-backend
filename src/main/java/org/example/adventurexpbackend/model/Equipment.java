@@ -13,21 +13,15 @@ public class Equipment {
     private boolean functional;
     private boolean underService;
 
-    @ManyToOne
-    @JoinColumn(name = "activity_id")
-    @JsonBackReference
-    private Activity activity;
 
     // Constructors, getters, and setters
     public Equipment() {
     }
 
-    public Equipment(String name, boolean functional, boolean underService, Activity activity) {
+    public Equipment(String name, boolean functional, boolean underService) {
         this.name = name;
         this.functional = functional;
         this.underService = underService;
-        this.activity = activity;
-
     }
 
     public Long getId() {
@@ -60,14 +54,6 @@ public class Equipment {
 
     public void setUnderService(boolean underService) {
         this.underService = underService;
-    }
-
-    public Activity getActivity() {
-        return activity;
-    }
-
-    public void setActivity(Activity activity) {
-        this.activity = activity;
     }
 
 

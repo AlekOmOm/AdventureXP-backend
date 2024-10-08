@@ -28,14 +28,15 @@ public class Activity {
     private int timeSlotInterval;
 
 
-    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+
     private List<Equipment> equipmentList;
 
-    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+
     private Set<EquipmentType> equipmentTypes;
 
-
-    // Constructors, getters, and setters
+    // ---------------Constructors----------------
     public Activity() {
     }
 
@@ -55,6 +56,7 @@ public class Activity {
         this.equipmentTypes = equipmentRequiredPerPerson;
     }
 
+    // --------------- Get and Set methods ----------------
     public Long getId() {
         return id;
     }

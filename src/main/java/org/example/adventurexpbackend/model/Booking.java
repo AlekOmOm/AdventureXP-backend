@@ -19,14 +19,12 @@ public class Booking {
     private int personsAmount;
     private String participantName; //Name of participant who made the booking
 
-    @ManyToOne
+    @ManyToOne(optional = true)
     @JoinColumn(name = "activity", referencedColumnName = "id")
     Activity activity;
 
 
     public Booking() {
-
-
     }
 
     public Booking(String participantName,LocalDate date, LocalTime startTime, LocalTime endTime, int personsAmount, Activity activity) {
