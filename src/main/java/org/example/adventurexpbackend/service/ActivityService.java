@@ -26,17 +26,7 @@ public class ActivityService {
         this.activityRepository = activityRepository;
     }
 
-    @Transactional
-    public Activity saveActivity(Activity activity) {
-        List<TimeSlot> generatedTimeSlots = generateTimeSlots(activity);
-        activity.setTimeSlots(generatedTimeSlots);
 
-        for (TimeSlot timeSlot : generatedTimeSlots) {
-            updateTimeSlotAvailability(timeSlot);
-        }
-
-        return activityRepository.save(activity);
-    }
 
     public List<Activity> getAllActivities() {
         return activityRepository.findAll();
