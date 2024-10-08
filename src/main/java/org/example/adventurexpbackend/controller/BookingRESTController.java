@@ -26,9 +26,7 @@ public class BookingRESTController {
     public ResponseEntity<String> createBooking(@RequestBody Booking booking) {
         System.out.println("Received booking request:" + booking);
 
-        boolean isBookingCreated = bookingService.createBooking(booking);
-
-        if (isBookingCreated) {
+        if (bookingService.book(booking) != null) {
             return ResponseEntity.status(HttpStatus.CREATED).body("Booking successful");//custom message for a successful booking
         }else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Booking denied: Max participants limit reached");// custom message for a denied
