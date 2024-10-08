@@ -86,8 +86,12 @@ public class BookingService {
         for (AvailableTimeSlot availableTimeSlot : availableTimeSlots) {
             if (booking.getStartTime().isAfter(availableTimeSlot.getStartTime()) && booking.getEndTime().isBefore(availableTimeSlot.getEndTime())) {
                 booking.setActivity(activity);
-                long startValue = getAllBookings().getLast().getId()+1;
-                sequenceResetter.resetAutoIncrement("booking", startValue);
+
+                List<Booking> repoList = getAllBookings();
+                if (!repoList.isEmpty()) {
+                    sequenceResetter.resetAutoIncrement("booking", repoList.getLast().getId() + 1);
+                }
+
                 bookingRepository.save(booking);
                 return true;
             }
