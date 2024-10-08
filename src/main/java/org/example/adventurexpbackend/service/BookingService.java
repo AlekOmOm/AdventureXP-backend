@@ -1,6 +1,7 @@
 package org.example.adventurexpbackend.service;
 
 
+import org.example.adventurexpbackend.config.SequenceResetter;
 import org.example.adventurexpbackend.model.Activity;
 import org.example.adventurexpbackend.model.Booking;
 import org.example.adventurexpbackend.repository.BookingRepository;
@@ -18,11 +19,13 @@ public class BookingService {
 
     private final BookingRepository bookingRepository;
     private final ActivityService activityService;
+    private final SequenceResetter sequenceResetter;
 
     @Autowired
-    public BookingService(BookingRepository bookingRepository, ActivityService activityService) {
+    public BookingService(BookingRepository bookingRepository, ActivityService activityService, SequenceResetter sequenceResetter) {
         this.bookingRepository = bookingRepository;
         this.activityService = activityService;
+        this.sequenceResetter = sequenceResetter;
     }
 
     // ----------------- Operations ---------------------
@@ -83,6 +86,8 @@ public class BookingService {
         for (AvailableTimeSlot availableTimeSlot : availableTimeSlots) {
             if (booking.getStartTime().isAfter(availableTimeSlot.getStartTime()) && booking.getEndTime().isBefore(availableTimeSlot.getEndTime())) {
                 booking.setActivity(activity);
+                long startValue = getAllBookings().getLast().getId()+1;
+                sequenceResetter.resetAutoIncrement("booking", startValue);
                 bookingRepository.save(booking);
                 return true;
             }

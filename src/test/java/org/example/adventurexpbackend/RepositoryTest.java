@@ -10,6 +10,7 @@ import org.example.adventurexpbackend.service.BookingService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,6 +29,29 @@ public class RepositoryTest {
     private EquipmentRepository equipmentRepository;
     @Autowired
     private BookingService bookingService;
+
+    // test delete booking, save new booking, and test id is correctly set to highest id + 1
+    @Test
+    @Transactional
+    void sequenceResetter() {
+        List<Booking> bookings = bookingService.getAllBookings();
+        Long lastIdBefore = bookings.getLast().getId();
+
+        bookingService.deleteBooking(bookings.get(bookings.size()/2).getId());
+
+
+        Booking booking = bookings.get(bookings.size()/2);
+        booking.setId(null);
+        booking.setPersonsAmount(1);
+        bookingService.createBooking(booking);
+
+        List<Booking> bookingsAfterSave = bookingService.getAllBookings();
+        Long lastIdAfter = bookingsAfterSave.getLast().getId();
+
+        assertEquals(lastIdBefore, lastIdAfter);
+        System.out.println("Last id before: " + lastIdBefore);
+        System.out.println("Last id after: " + lastIdAfter);
+    }
 
     @Test
     void findAllActivities_ReturnsNonEmptyList() {
