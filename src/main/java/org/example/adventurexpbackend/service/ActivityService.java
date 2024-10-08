@@ -59,42 +59,6 @@ public class ActivityService {
         }
     }
 
-
-
-    //----------------------------------------------------------------------------------------------------------------
-  //Timeslot generator :-)
-    private List<TimeSlot> generateTimeSlots(Activity activity) {
-        List<TimeSlot> timeSlots = new ArrayList<>();
-
-        // open and close from 10 to 18
-        LocalTime openingTime = LocalTime.of(10, 0);
-        LocalTime closingTime = LocalTime.of(18, 0);
-        int interval = activity.getTimeSlotInterval();
-
-        // MAking the slots
-        LocalTime currentTime = openingTime;
-        while (currentTime.isBefore(closingTime)) {
-            LocalTime endTime = currentTime.plusMinutes(interval);
-            if (endTime.isAfter(closingTime)) {
-                endTime = closingTime;
-            }
-
-            TimeSlot timeSlot = new TimeSlot();
-            timeSlot.setStartTime(currentTime);
-            timeSlot.setEndTime(endTime);
-
-
-            timeSlot.setMaxParticipants(activity.getPersonsMax());
-            timeSlot.setCurrentParticipants(0);
-            timeSlot.setAvailable(true);
-
-            timeSlots.add(timeSlot);
-
-            currentTime = endTime;
-        }
-
-        return timeSlots;
-    }
 //----------------------------------------------------------------------------------------------------------------------
     private void loadTimeslots(TimeSlot timeSlot){
         if (timeSlot.isAvailable()){

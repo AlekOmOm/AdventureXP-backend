@@ -19,6 +19,8 @@ public class TimeSlot {
     private int currentParticipants;
     boolean available;
 
+
+
     public TimeSlot() {
     }
 

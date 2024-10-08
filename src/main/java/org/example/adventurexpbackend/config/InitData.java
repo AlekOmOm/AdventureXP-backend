@@ -1,3 +1,4 @@
+
 package org.example.adventurexpbackend.config;
 
 import org.example.adventurexpbackend.model.Activity;

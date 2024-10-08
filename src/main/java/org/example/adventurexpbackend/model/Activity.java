@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.*;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -43,7 +44,7 @@ public class Activity {
     public Activity() {
     }
 
-    public Activity(String name, String description, int pricePrPerson, int timeMaxLimit, int ageMin, int ageMax, int personsMin, int personsMax, LocalTime openingTime, LocalTime closingTime, int timeSlotInterval, List<Equipment> equipmentList, Set<EquipmentType> equipmentRequiredPerPerson, List<TimeSlot> timeSlots) {
+    public Activity(String name, String description, int pricePrPerson, int timeMaxLimit, int ageMin, int ageMax, int personsMin, int personsMax, LocalTime openingTime, LocalTime closingTime, int timeSlotInterval, List<Equipment> equipmentList, Set<EquipmentType> equipmentRequiredPerPerson) {
         this.name = name;
         this.description = description;
         this.pricePrPerson = pricePrPerson;
@@ -57,7 +58,36 @@ public class Activity {
         this.timeSlotInterval = timeSlotInterval;
         this.equipmentList = equipmentList;
         this.equipmentTypes = equipmentRequiredPerPerson;
-        this.timeSlots = timeSlots;
+        this.timeSlots = generateTimeSlots();
+    }
+
+    private List<TimeSlot> generateTimeSlots() {
+        List<TimeSlot> timeSlots = new ArrayList<>();
+        int interval = timeSlotInterval;
+
+        // MAking the slots
+        LocalTime currentTime = openingTime;
+        while (currentTime.isBefore(closingTime)) {
+            LocalTime endTime = currentTime.plusMinutes(interval);
+            if (endTime.isAfter(closingTime)) {
+                endTime = closingTime;
+            }
+
+            TimeSlot timeSlot = new TimeSlot();
+            timeSlot.setStartTime(currentTime);
+            timeSlot.setEndTime(endTime);
+
+
+            timeSlot.setMaxParticipants(personsMax);
+            timeSlot.setCurrentParticipants(0);
+            timeSlot.setAvailable(true);
+
+            timeSlots.add(timeSlot);
+
+            currentTime = endTime;
+        }
+
+        return timeSlots;
     }
 
     // --------------- Get and Set methods ----------------
