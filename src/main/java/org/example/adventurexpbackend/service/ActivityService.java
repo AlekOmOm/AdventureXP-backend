@@ -36,17 +36,6 @@ public class ActivityService {
         return activityRepository.save(activity);
     }
 
-    public List<Activity> getAllActivities() {
-        List <Activity> activities = new ArrayList<>();
-        System.out.println("Debug: Activity:");
-        for (Activity activity : activityRepository.findAll()) {
-            activities.add(activity);
-
-            System.out.println( " " + activity);
-        }
-        return activities;
-    }
-
     @Transactional
     public List<Activity> saveAllActivities(List<Activity> activities) {
         List<Activity> savedActivities = new ArrayList<>();
@@ -62,21 +51,6 @@ public class ActivityService {
         return savedActivities;
     }
 
-    public Activity getActivity(Activity activity) {
-
-        if (activity.getId() != null) {
-            return activityRepository.findById(activity.getId()).orElse(null);
-        } else {
-            return activityRepository.findByName(activity.getName());
-        }
-    }
-
-    public void delete(Activity activity) {
-        List<Booking> bookings = bookingRepository.findByActivity(activity);
-        bookingRepository.deleteAll(bookings);
-        activityRepository.delete(activity);
-    }
-
     @Transactional
     public void updateEquipmentList(Long activityId, List<Equipment> newEquipmentList) {
         Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new IllegalArgumentException("Invalid activity id"));
@@ -85,10 +59,24 @@ public class ActivityService {
         activityRepository.save(activity);
     }
 
+    @Transactional
+    public void delete(Activity activity) {
+        List<Booking> bookings = bookingRepository.findByActivity(activity);
+        bookingRepository.deleteAll(bookings);
+        activityRepository.delete(activity);
+    }
 
 
     // ------------------- Read -------------------
 
+    public Activity getActivity(Activity activity) {
+
+        if (activity.getId() != null) {
+            return activityRepository.findById(activity.getId()).orElse(null);
+        } else {
+            return activityRepository.findByName(activity.getName());
+        }
+    }
 
     public Optional<Activity> getActivityOpt(Activity activity) {
 
@@ -113,6 +101,16 @@ public class ActivityService {
         return Optional.ofNullable(activityRepository.findByName(name));
     }
 
+    public List<Activity> getAllActivities() {
+        List <Activity> activities = new ArrayList<>();
+        System.out.println("Debug: Activity:");
+        for (Activity activity : activityRepository.findAll()) {
+            activities.add(activity);
+
+            System.out.println( " " + activity);
+        }
+        return activities;
+    }
 
     // ------------------- Update -------------------
         // if exists update, if not create
