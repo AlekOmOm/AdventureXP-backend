@@ -113,9 +113,9 @@ public class InitData implements CommandLineRunner {
 
     private List<Activity> createActivities(List<Equipment> paintballEquipmentList, List<Equipment> climbingEquipmentList, List<Equipment> goKartEquipmentList, Set<EquipmentType> paintballEquipmentTypes, Set<EquipmentType> climbingEquipmentTypes, Set<EquipmentType> goKartEquipmentTypes) {
         List<Activity> activities = new ArrayList<>(List.of(
-                new Activity("Paintball", "Paintball is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 2, paintballEquipmentList, paintballEquipmentTypes),
-                new Activity("Climbing", "Climbing is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 2, climbingEquipmentList, climbingEquipmentTypes),
-                new Activity("Go-kart", "Go-kart is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 2, goKartEquipmentList, goKartEquipmentTypes)
+                new Activity("Paintball", "Paintball is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, paintballEquipmentList, paintballEquipmentTypes),
+                new Activity("Climbing", "Climbing is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, climbingEquipmentList, climbingEquipmentTypes),
+                new Activity("Go-kart", "Go-kart is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, goKartEquipmentList, goKartEquipmentTypes)
         ));
         return activityService.saveAllActivities(activities);
     }
