@@ -12,7 +12,6 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
     @Override
     List<Activity> findAll();
-    // Custom query to find activity by name
+
     Activity findByName(String name);
 }
-
