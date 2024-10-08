@@ -12,12 +12,6 @@ public class EquipmentType {
     private Long id;
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "activity_id")
-    private Activity activity;
-
-
-
     // Constructors, getters, and setters
     public EquipmentType() {
     }
@@ -42,13 +36,6 @@ public class EquipmentType {
         this.name = name;
     }
 
-    public Activity getActivity() {
-        return activity;
-    }
-
-    public void setActivity(Activity activity) {
-        this.activity = activity;
-    }
 
     @Override
     public String toString() {

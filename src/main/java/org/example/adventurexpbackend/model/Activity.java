@@ -1,6 +1,5 @@
 package org.example.adventurexpbackend.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,15 +28,15 @@ public class Activity {
     private int timeSlotInterval;
 
 
-    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "activity_id")
     private List<Equipment> equipmentList;
 
-    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "activity_id")
     private Set<EquipmentType> equipmentTypes;
 
-    // ------------------- Constructors -------------------
+    // ---------------Constructors----------------
     public Activity() {
     }
 
@@ -57,7 +56,7 @@ public class Activity {
         this.equipmentTypes = equipmentRequiredPerPerson;
     }
 
-    // ------------------- Getter & Setters -------------------
+    // --------------- Get and Set methods ----------------
     public Long getId() {
         return id;
     }
@@ -89,6 +88,8 @@ public class Activity {
     public void setPricePrPerson(int pricePrPerson) {
         this.pricePrPerson = pricePrPerson;
     }
+
+//---------------Getters and Setters-----------------------
     public int getTimeMaxLimit() {
         return timeMaxLimit;
     }

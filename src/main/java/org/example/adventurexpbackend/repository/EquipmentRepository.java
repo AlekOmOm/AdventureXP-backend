@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface EquipmentRepository extends JpaRepository<Equipment, Long> {
 
-    List<Equipment> findByActivity(Activity activity);
+
 
 
     // Custom query to find equipment by name
