@@ -21,4 +21,8 @@ public class SequenceResetter {
     public void resetAutoIncrement(String tableName) {
         jdbcTemplate.execute("ALTER TABLE " + tableName + " AUTO_INCREMENT = 1");
     }
+
+    public void resetAutoIncrement(String tableName, long startValue) {
+        jdbcTemplate.execute("ALTER TABLE " + tableName + " AUTO_INCREMENT = " + startValue);
+    }
 }
