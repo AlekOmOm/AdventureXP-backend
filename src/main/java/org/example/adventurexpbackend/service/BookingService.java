@@ -78,6 +78,8 @@ public class BookingService {
     public boolean createBooking(Booking booking) {
         Activity activity = activityService.getActivity(booking.getActivity());
 
+        System.out.println(activity);
+
         if (activity == null) {
             System.out.println("DEBUG: BookingService.createBooking");
             System.out.println(" Activity not found");
@@ -85,6 +87,14 @@ public class BookingService {
         }
 
         List<AvailableTimeSlot> availableTimeSlots = getAvailableTimes(activity, booking.getDate(), booking.getPersonsAmount());
+
+        int maxParticipants = activity.getPersonsMax();
+        List<Booking> currentBookings = bookingRepository.findByActivity(activity);
+        int totalCurrentParticipants = currentBookings.stream().mapToInt(Booking::getPersonsAmount).sum();
+
+        if (booking.getPersonsAmount() > maxParticipants) {
+            return false;
+        }
 
         // if booking time is within available time slots
         for (AvailableTimeSlot availableTimeSlot : availableTimeSlots) {
@@ -101,6 +111,17 @@ public class BookingService {
             }
         }
 
+       // for (AvailableTimeSlot availableTimeSlot : availableTimeSlots) {
+         //   if (booking.getStartTime().isAfter(availableTimeSlot.getStartTime()) && booking.getEndTime().isBefore(availableTimeSlot.getEndTime())) {
+           //     booking.setActivity(activity);
+             //   bookingRepository.save(booking);
+               // return true;
+            //}
+        //}
+        long startValue = getAllBookings().getLast().getId();
+        sequenceResetter.resetAutoIncrement("booking",startValue);
+
+        bookingRepository.save(booking);
         return true;
     }
 
