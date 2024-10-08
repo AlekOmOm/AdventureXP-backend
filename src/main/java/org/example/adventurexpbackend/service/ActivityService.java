@@ -1,16 +1,23 @@
 package org.example.adventurexpbackend.service;
 
 import org.example.adventurexpbackend.model.Activity;
+import org.example.adventurexpbackend.model.TimeSlot;
 import org.example.adventurexpbackend.repository.ActivityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ActivityService {
+
+    public Optional<Activity> findActivityById(Long id) {
+        return activityRepository.findById(id);
+    }
 
     private final ActivityRepository activityRepository;
 
@@ -21,6 +28,13 @@ public class ActivityService {
 
     @Transactional
     public Activity saveActivity(Activity activity) {
+        List<TimeSlot> generatedTimeSlots = generateTimeSlots(activity);
+        activity.setTimeSlots(generatedTimeSlots);
+
+        for (TimeSlot timeSlot : generatedTimeSlots) {
+            updateTimeSlotAvailability(timeSlot);
+        }
+
         return activityRepository.save(activity);
     }
 
@@ -45,4 +59,56 @@ public class ActivityService {
         }
     }
 
+
+
+    //----------------------------------------------------------------------------------------------------------------
+  //Timeslot generator :-)
+    private List<TimeSlot> generateTimeSlots(Activity activity) {
+        List<TimeSlot> timeSlots = new ArrayList<>();
+
+        // open and close from 10 to 18
+        LocalTime openingTime = LocalTime.of(10, 0);
+        LocalTime closingTime = LocalTime.of(18, 0);
+        int interval = activity.getTimeSlotInterval();
+
+        // MAking the slots
+        LocalTime currentTime = openingTime;
+        while (currentTime.isBefore(closingTime)) {
+            LocalTime endTime = currentTime.plusMinutes(interval);
+            if (endTime.isAfter(closingTime)) {
+                endTime = closingTime;
+            }
+
+            TimeSlot timeSlot = new TimeSlot();
+            timeSlot.setStartTime(currentTime);
+            timeSlot.setEndTime(endTime);
+
+
+            timeSlot.setMaxParticipants(activity.getPersonsMax());
+            timeSlot.setCurrentParticipants(0);
+            timeSlot.setAvailable(true);
+
+            timeSlots.add(timeSlot);
+
+            currentTime = endTime;
+        }
+
+        return timeSlots;
+    }
+//----------------------------------------------------------------------------------------------------------------------
+    private void loadTimeslots(TimeSlot timeSlot){
+        if (timeSlot.isAvailable()){
+            timeSlot.setAvailable(false);
+        }
+    }
+
+
+    //Setting the availability based on participans
+    private void updateTimeSlotAvailability(TimeSlot timeSlot) {
+        if (timeSlot.getCurrentParticipants() >= timeSlot.getMaxParticipants()) {
+            timeSlot.setAvailable(false);
+        } else {
+            timeSlot.setAvailable(true);
+        }
+    }
 }

@@ -17,16 +17,18 @@ public class TimeSlot {
     private LocalTime endTime;
     private int maxParticipants;
     private int currentParticipants;
+    boolean available;
 
     public TimeSlot() {
     }
 
-    public TimeSlot(LocalDate date, LocalTime startTime, LocalTime endTime, int maxParticipants, int currentParticipants) {
+    public TimeSlot(LocalDate date, LocalTime startTime, LocalTime endTime, int maxParticipants, int currentParticipants, boolean available) {
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
         this.maxParticipants = maxParticipants;
         this.currentParticipants = currentParticipants;
+        this.available = available;
     }
 
     public Long getId() {
@@ -77,6 +79,13 @@ public class TimeSlot {
         this.currentParticipants = currentParticipants;
     }
 
+    public boolean isAvailable() {
+        return available;
+    }
+    public void setAvailable(boolean available) {
+        this.available = available;
+    }
+
     @Override
     public String toString() {
         return "TimeSlot{" +
@@ -86,6 +95,7 @@ public class TimeSlot {
                 ", endTime=" + endTime +
                 ", maxParticipants=" + maxParticipants +
                 ", currentParticipants=" + currentParticipants +
+                ", available=" + available +
                 '}';
     }
 

@@ -36,11 +36,14 @@ public class Activity {
     @JoinColumn(name = "activity_id")
     private Set<EquipmentType> equipmentTypes;
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "activity_id")
+    private List<TimeSlot> timeSlots;
     // ---------------Constructors----------------
     public Activity() {
     }
 
-    public Activity(String name, String description, int pricePrPerson, int timeMaxLimit, int ageMin, int ageMax, int personsMin, int personsMax, LocalTime openingTime, LocalTime closingTime, int timeSlotInterval, List<Equipment> equipmentList, Set<EquipmentType> equipmentRequiredPerPerson) {
+    public Activity(String name, String description, int pricePrPerson, int timeMaxLimit, int ageMin, int ageMax, int personsMin, int personsMax, LocalTime openingTime, LocalTime closingTime, int timeSlotInterval, List<Equipment> equipmentList, Set<EquipmentType> equipmentRequiredPerPerson, List<TimeSlot> timeSlots) {
         this.name = name;
         this.description = description;
         this.pricePrPerson = pricePrPerson;
@@ -54,6 +57,7 @@ public class Activity {
         this.timeSlotInterval = timeSlotInterval;
         this.equipmentList = equipmentList;
         this.equipmentTypes = equipmentRequiredPerPerson;
+        this.timeSlots = timeSlots;
     }
 
     // --------------- Get and Set methods ----------------
@@ -89,7 +93,8 @@ public class Activity {
         this.pricePrPerson = pricePrPerson;
     }
 
-//---------------Getters and Setters-----------------------
+
+    //---------------Getters and Setters-----------------------
     public int getTimeMaxLimit() {
         return timeMaxLimit;
     }
@@ -170,6 +175,14 @@ public class Activity {
         this.equipmentTypes = equipmentTypes;
     }
 
+    public List<TimeSlot> getTimeSlots() {
+        return timeSlots;
+    }
+
+    public void setTimeSlots(List<TimeSlot> timeSlots) {
+        this.timeSlots = timeSlots;
+    }
+
     @Override
     public String toString() {
         return "Activity{" +
@@ -187,6 +200,7 @@ public class Activity {
                 ", timeSlotInterval=" + timeSlotInterval +
                 ", equipmentList=" + equipmentList +
                 ", equipmentTypes=" + equipmentTypes +
+                ", timeSlots=" + timeSlots +
                 '}';
     }
 }
