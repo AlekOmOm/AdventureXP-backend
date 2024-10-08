@@ -30,6 +30,7 @@ public class ActivityRESTController {
     @GetMapping
     public ResponseEntity<List<Activity>>getAllActivities(){
         List<Activity> activities = activityService.getAllActivities();
+        System.out.println(activities);
         return ResponseEntity.ok(activities);
     }
 

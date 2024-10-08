@@ -53,8 +53,8 @@ public class InitData implements CommandLineRunner {
         if (isDBEmpty()) {
             List<Activity> activities = initDataActivity.saveData();
 
-            initDataBooking.setActivities(activities);
-            initDataBooking.saveData();
+//            initDataBooking.setActivities(activities);
+//            initDataBooking.saveData();
             System.out.println("Data initialized");
         }
     }

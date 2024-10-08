@@ -7,6 +7,7 @@ import org.example.adventurexpbackend.repository.ActivityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +17,12 @@ import java.util.Optional;
 public class ActivityService {
 
     private final ActivityRepository activityRepository;
+    private final RestTemplate restTemplate;
 
-    public ActivityService(ActivityRepository activityRepository) {
+    @Autowired
+    public ActivityService(ActivityRepository activityRepository, RestTemplate restTemplate) {
         this.activityRepository = activityRepository;
+        this.restTemplate = restTemplate;
     }
 
     // ------------------- Create -------------------

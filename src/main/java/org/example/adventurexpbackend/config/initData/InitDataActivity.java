@@ -30,9 +30,9 @@ public class InitDataActivity {
     protected List<Activity> getActivities() {
 
         List<Activity> activities = new ArrayList<>(List.of(
-                new Activity("Paintball", "Paintball is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18,0), 2, initDataEquipment.getPaintBallEquipmentList(), initDataEquipment.getPaintballEquipmentTypes()),
-                new Activity("Climbing", "Climbing is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18,0), 2, initDataEquipment.getClimbingEquipmentList(), initDataEquipment.getClimbingEquipmentTypes()),
-                new Activity("Go-kart", "Go-kart is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18,0), 2, initDataEquipment.getGoKartEquipmentList(), initDataEquipment.getGoKartEquipmentTypes())
+                new Activity("Paintball", "Paintball is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18,0), 60, initDataEquipment.getPaintBallEquipmentList(), initDataEquipment.getPaintballEquipmentTypes()),
+                new Activity("Climbing", "Climbing is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18,0), 60, initDataEquipment.getClimbingEquipmentList(), initDataEquipment.getClimbingEquipmentTypes()),
+                new Activity("Go-kart", "Go-kart is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18,0), 60, initDataEquipment.getGoKartEquipmentList(), initDataEquipment.getGoKartEquipmentTypes())
         ));
 
 

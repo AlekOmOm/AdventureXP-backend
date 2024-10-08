@@ -1,5 +1,6 @@
 package org.example.adventurexpbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,9 +30,11 @@ public class Activity {
 
 
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Equipment> equipmentList;
 
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private Set<EquipmentType> equipmentTypes;
 
     // ------------------- Constructors -------------------
