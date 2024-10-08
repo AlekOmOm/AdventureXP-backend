@@ -25,8 +25,7 @@ public class BookingService {
     private final SequenceResetter sequenceResetter;
 
     @Autowired
-    public BookingService(BookingRepository bookingRepository, ActivityService activityService, SequenceResetter sequenceResetter) {
-    public BookingService(BookingRepository bookingRepository, ActivityService activityService, RestTemplate restTemplate) {
+    public BookingService(BookingRepository bookingRepository, ActivityService activityService, SequenceResetter sequenceResetter, RestTemplate restTemplate) {
         this.bookingRepository = bookingRepository;
         this.activityService = activityService;
         this.sequenceResetter = sequenceResetter;

@@ -22,8 +22,7 @@ public class ActivityService {
     private final BookingRepository bookingRepository;
 
     @Autowired
-    public ActivityService(ActivityRepository activityRepository, BookingRepository bookingRepository) {
-    public ActivityService(ActivityRepository activityRepository, SequenceResetter sequenceResetter) {
+    public ActivityService(ActivityRepository activityRepository, BookingRepository bookingRepository,  SequenceResetter sequenceResetter) {
         this.activityRepository = activityRepository;
         this.sequenceResetter = sequenceResetter;
         this.bookingRepository = bookingRepository;
@@ -82,9 +81,7 @@ public class ActivityService {
         activity.getEquipmentList().addAll(newEquipmentList);
         activityRepository.save(activity);
     }
-    public void delete(Activity activity) {
-        activityRepository.delete(activity);
-    }
+
 
 
     // ------------------- Read -------------------

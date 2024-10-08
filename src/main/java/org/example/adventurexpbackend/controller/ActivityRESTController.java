@@ -1,6 +1,5 @@
 package org.example.adventurexpbackend.controller;
 
-
 import org.example.adventurexpbackend.model.Activity;
 import org.example.adventurexpbackend.model.Equipment;
 import org.example.adventurexpbackend.service.ActivityService;
