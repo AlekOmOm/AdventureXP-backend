@@ -39,10 +39,14 @@ public class ActivityRESTController {
     @PutMapping("/{id}")
     public ResponseEntity<Activity> updateActivity(@PathVariable Long id, @RequestBody Activity activity) {
         Optional<Activity> existingActivity = Optional.ofNullable(activityService.getActivity(activity));
+        System.out.println("updateActivity");
+        System.out.println(" Activity: " + activity);
+        System.out.println(" ExistingActivity: " + existingActivity);
         if (existingActivity.isPresent()) {
             activity.setId(id);
             activity.setEquipmentList(existingActivity.get().getEquipmentList());
             activity.setEquipmentTypes(existingActivity.get().getEquipmentTypes());
+            System.out.println(" ActivityUpdated: " + activity);
             Activity updatedActivity = activityService.saveActivity(activity);
             return ResponseEntity.ok(updatedActivity);
         } else {

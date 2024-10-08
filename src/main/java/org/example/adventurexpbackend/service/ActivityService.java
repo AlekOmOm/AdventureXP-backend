@@ -31,6 +31,8 @@ public class ActivityService {
     // ------------------- Create -------------------
     @Transactional
     public Activity saveActivity(Activity activity) {
+        System.out.println("Debug: ActivityService: saveActivity");
+        System.out.println(" Activity: " + activity);
         return activityRepository.save(activity);
     }
 
@@ -61,6 +63,7 @@ public class ActivityService {
     }
 
     public Activity getActivity(Activity activity) {
+
         if (activity.getId() != null) {
             return activityRepository.findById(activity.getId()).orElse(null);
         } else {
