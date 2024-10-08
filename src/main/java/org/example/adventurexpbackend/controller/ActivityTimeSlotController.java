@@ -29,22 +29,24 @@ public class ActivityTimeSlotController {
         Optional<Activity> activityOptional = activityService.findActivityById(activityId);
         if (activityOptional.isPresent()) {
             Activity activity = activityOptional.get();
-            // Filter timeslots that are available
+            // Here we stream that we only get the is availbale.
             List<TimeSlot> availableTimeSlots = activity.getTimeSlots().stream()
                     .filter(TimeSlot::isAvailable)
                     .collect(Collectors.toList());
+
             return new ResponseEntity<>(availableTimeSlots, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    // 2. POST endpoint to book a timeslot and mark it as unavailable
+    //
+    //to book a timeslot and mark it as unavailable
     @PostMapping("/{activityId}/book-timeslot/{timeslotId}")
     public ResponseEntity<String> bookTimeSlot(@PathVariable Long activityId, @PathVariable Long timeslotId) {
         Optional<Activity> activityOptional = activityService.findActivityById(activityId);
         if (activityOptional.isPresent()) {
             Activity activity = activityOptional.get();
-            // Find the timeslot to book
+            // here we search/find for a timeslot to book
             Optional<TimeSlot> timeSlotOptional = activity.getTimeSlots().stream()
                     .filter(ts -> ts.getId().equals(timeslotId))
                     .findFirst();
@@ -52,16 +54,16 @@ public class ActivityTimeSlotController {
             if (timeSlotOptional.isPresent()) {
                 TimeSlot timeSlot = timeSlotOptional.get();
                 if (timeSlot.isAvailable()) {
-                    // Mark the timeslot as unavailable
+                    //We set the timeslot as unavailable
                     timeSlot.setAvailable(false);
                     activityService.saveActivity(activity); // Save changes
-                    return new ResponseEntity<>("Timeslot booked successfully.", HttpStatus.OK);
+                    return new ResponseEntity<>("Timeslot booked successfully :-).", HttpStatus.OK);
                 } else {
-                    return new ResponseEntity<>("Timeslot is already booked.", HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>("Timeslot is already booked. :-(", HttpStatus.BAD_REQUEST);
                 }
             }
-            return new ResponseEntity<>("Timeslot not found.", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Timeslot not found #Sad.", HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>("Activity not found.", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>("Activity not found. Much bigger problem", HttpStatus.NOT_FOUND);
     }
 }
