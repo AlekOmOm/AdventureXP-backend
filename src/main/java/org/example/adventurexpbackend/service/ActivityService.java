@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +39,11 @@ public class ActivityService {
         return savedActivities;
     }
 
+    @Transactional
+    public Activity saveActivity(Activity activity) {
+        return activityRepository.save(activity);
+    }
+
     public Activity getActivity(Activity activity) {
         if (activity.getId() != null) {
             return activityRepository.findById(activity.getId()).orElse(null);
@@ -47,6 +51,10 @@ public class ActivityService {
             return activityRepository.findByName(activity.getName());
         }
     }
+
+
+
+
 
     //----------------------------------------------------------------------------------------------------------------------
     private void loadTimeslots(TimeSlot timeSlot) {
