@@ -55,19 +55,9 @@ public class InitData implements CommandLineRunner {
         long[] startValues = getStartValues();
         sequenceResetter.resetSequences(startValues[0], startValues[1], startValues[2], startValues[3]);
 
-        Set<EquipmentType> paintballEquipmentTypes = createPaintballEquipmentTypes();
-        Set<EquipmentType> climbingEquipmentTypes = createClimbingEquipmentTypes();
-        Set<EquipmentType> goKartEquipmentTypes = createGoKartEquipmentTypes();
-
-        List<Equipment> paintballEquipmentList = createPaintballEquipment();
-        List<Equipment> climbingEquipmentList = createClimbingEquipment();
-        List<Equipment> goKartEquipmentList = createGoKartEquipment();
-
-        List<Activity> activities = createActivities(paintballEquipmentList, climbingEquipmentList, goKartEquipmentList, paintballEquipmentTypes, climbingEquipmentTypes, goKartEquipmentTypes);
-        createBookings(activities);
-
-        deleteActivity();
+        createBookings(createActivities());
     }
+
 
     private void clearDB() {
         bookingRepository.deleteAll();
@@ -76,6 +66,104 @@ public class InitData implements CommandLineRunner {
         equipmentTypeRepository.deleteAll();
     }
 
+
+    private long[] getStartValues() {
+        return new long[]{
+                activityRepository.findAll().isEmpty() ? 1 : activityRepository.findAll().get(activityRepository.findAll().size()-1).getId() + 1,
+                equipmentRepository.findAll().isEmpty() ? 1 : equipmentRepository.findAll().get(equipmentRepository.findAll().size()-1).getId() + 1,
+                equipmentTypeRepository.findAll().isEmpty() ? 1 : equipmentTypeRepository.findAll().get(equipmentTypeRepository.findAll().size()-1).getId() + 1,
+                bookingRepository.findAll().isEmpty() ? 1 : bookingRepository.findAll().get(bookingRepository.findAll().size()-1).getId() + 1
+        };
+    }
+
+    private Set<EquipmentType> createPaintballEquipmentTypes() {
+
+        return new HashSet<>((new HashSet<>(List.of(
+                new EquipmentType("Paintball gun"),
+                new EquipmentType("Paintball mask"),
+                new EquipmentType("Paintball suit")
+        ))));
+    }
+
+    private Set<EquipmentType> createClimbingEquipmentTypes() {
+
+        return new HashSet<>((new HashSet<>(List.of(
+                new EquipmentType("Climbing shoes"),
+                new EquipmentType("Climbing harness"),
+                new EquipmentType("Climbing chalk")
+        ))));
+    }
+
+    private Set<EquipmentType> createGoKartEquipmentTypes() {
+
+        return new HashSet<>((new HashSet<>(List.of(
+                new EquipmentType("Go-kart car"),
+                new EquipmentType("Go-kart helmet"),
+                new EquipmentType("Go-kart suit"),
+                new EquipmentType("Go-kart gloves")
+        ))));
+    }
+
+    private List<Equipment> createPaintballEquipment() {
+        return new ArrayList<>(List.of(
+                new Equipment("Paintball gun", true, false),
+                new Equipment("Paintball mask", true, false),
+                new Equipment("Paintball suit", true, false)
+        ));
+    }
+
+    private List<Equipment> createClimbingEquipment() {
+        return new ArrayList<>(List.of(
+                new Equipment("Climbing shoes", true, false),
+                new Equipment("Climbing harness", true, false),
+                new Equipment("Climbing chalk", true, false)
+        ));
+    }
+
+    private List<Equipment> createGoKartEquipment() {
+
+        return new ArrayList<>(List.of(
+                new Equipment("Go-kart car", true, false),
+                new Equipment("Go-kart helmet", true, false),
+                new Equipment("Go-kart suit", true, false),
+                new Equipment("Go-kart gloves", true, false)
+        ));
+    }
+
+    private List<Activity> createActivities() {
+        Set<EquipmentType> paintballEquipmentTypes = createPaintballEquipmentTypes();
+        Set<EquipmentType> climbingEquipmentTypes = createClimbingEquipmentTypes();
+        Set<EquipmentType> goKartEquipmentTypes = createGoKartEquipmentTypes();
+
+        List<Equipment> paintballEquipmentList = createPaintballEquipment();
+        List<Equipment> climbingEquipmentList = createClimbingEquipment();
+        List<Equipment> goKartEquipmentList = createGoKartEquipment();
+
+        List<Activity> activities = new ArrayList<>(List.of(
+                new Activity("Paintball", "Paintball is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, paintballEquipmentList, paintballEquipmentTypes),
+                new Activity("Climbing", "Climbing is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, climbingEquipmentList, climbingEquipmentTypes),
+                new Activity("Go-kart", "Go-kart is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, goKartEquipmentList, goKartEquipmentTypes)
+        ));
+        return activityService.saveAllActivities(activities);
+    }
+
+    private void createBookings(List<Activity> activities) {
+        List<Booking> bookings = new ArrayList<>(List.of(
+                new Booking("John the Baptist", LocalDate.now(), LocalTime.of(10, 0), LocalTime.of(12, 0), activities.get(0).getPersonsMax(), activities.get(0)), // Paintball
+                new Booking("Francis of Assisi", LocalDate.now(), LocalTime.of(12, 0), LocalTime.of(14, 0), 6, activities.get(0)), // Paintball 2 booking
+                new Booking("Soeren Pind", LocalDate.now(), LocalTime.of(14, 0), LocalTime.of(16, 0), 8, activities.get(0)), // Paintball 3 booking
+                new Booking("Scooby-Doo", LocalDate.now(), LocalTime.of(10, 0), LocalTime.of(12, 0), activities.get(1).getPersonsMax(), activities.get(1)), // Climbing
+                new Booking("Mickey Mouse", LocalDate.now(), LocalTime.of(12, 0), LocalTime.of(14, 0), 6, activities.get(1)), // Climbing 2 booking
+                new Booking("John Lennon", LocalDate.now(), LocalTime.of(14, 0), LocalTime.of(16, 0), 8, activities.get(1)), // Climbing 3 booking
+                new Booking("George Harrison", LocalDate.now(), LocalTime.of(10, 0), LocalTime.of(12, 0), activities.get(2).getPersonsMax(), activities.get(2)), // Go-kart
+                new Booking("Margrethe den Foerste", LocalDate.now(), LocalTime.of(12, 0), LocalTime.of(14, 0), 6, activities.get(2)), // Go-kart 2 booking
+                new Booking("Churchill", LocalDate.now(), LocalTime.of(14, 0), LocalTime.of(16, 0), 8, activities.get(2)) // Go-kart 3 booking
+        ));
+        bookingRepository.saveAll(bookings);
+    }
+
+
+    // ---- Debugging method to delete an activity ---
     @Transactional
     public void deleteActivity() {
         List<Activity> activities = activityRepository.findAll();
@@ -108,97 +196,6 @@ public class InitData implements CommandLineRunner {
             System.out.println(" Deleted equipmentTypes: " + deletedEquipmentTypes);
         }
     }
-
-    private long[] getStartValues() {
-        return new long[]{
-                activityRepository.findAll().isEmpty() ? 1 : activityRepository.findAll().get(activityRepository.findAll().size()-1).getId() + 1,
-                equipmentRepository.findAll().isEmpty() ? 1 : equipmentRepository.findAll().get(equipmentRepository.findAll().size()-1).getId() + 1,
-                equipmentTypeRepository.findAll().isEmpty() ? 1 : equipmentTypeRepository.findAll().get(equipmentTypeRepository.findAll().size()-1).getId() + 1,
-                bookingRepository.findAll().isEmpty() ? 1 : bookingRepository.findAll().get(bookingRepository.findAll().size()-1).getId() + 1
-        };
-    }
-
-    private Set<EquipmentType> createPaintballEquipmentTypes() {
-        Set<EquipmentType> equipmentTypes = new HashSet<>(List.of(
-                new EquipmentType("Paintball gun"),
-                new EquipmentType("Paintball mask"),
-                new EquipmentType("Paintball suit")
-        ));
-        return new HashSet<>((equipmentTypes));
-    }
-
-    private Set<EquipmentType> createClimbingEquipmentTypes() {
-        Set<EquipmentType> equipmentTypes = new HashSet<>(List.of(
-                new EquipmentType("Climbing shoes"),
-                new EquipmentType("Climbing harness"),
-                new EquipmentType("Climbing chalk")
-        ));
-        return new HashSet<>((equipmentTypes));
-    }
-
-    private Set<EquipmentType> createGoKartEquipmentTypes() {
-        Set<EquipmentType> equipmentTypes = new HashSet<>(List.of(
-                new EquipmentType("Go-kart car"),
-                new EquipmentType("Go-kart helmet"),
-                new EquipmentType("Go-kart suit"),
-                new EquipmentType("Go-kart gloves")
-        ));
-        return new HashSet<>((equipmentTypes));
-    }
-
-    private List<Equipment> createPaintballEquipment() {
-        List<Equipment> equipmentList = new ArrayList<>(List.of(
-                new Equipment("Paintball gun", true, false),
-                new Equipment("Paintball mask", true, false),
-                new Equipment("Paintball suit", true, false)
-        ));
-        return equipmentList;
-    }
-
-    private List<Equipment> createClimbingEquipment() {
-        List<Equipment> equipmentList = new ArrayList<>(List.of(
-                new Equipment("Climbing shoes", true, false),
-                new Equipment("Climbing harness", true, false),
-                new Equipment("Climbing chalk", true, false)
-        ));
-        return equipmentList;
-    }
-
-    private List<Equipment> createGoKartEquipment() {
-
-        return new ArrayList<>(List.of(
-                new Equipment("Go-kart car", true, false),
-                new Equipment("Go-kart helmet", true, false),
-                new Equipment("Go-kart suit", true, false),
-                new Equipment("Go-kart gloves", true, false)
-        ));
-    }
-
-    private List<Activity> createActivities(List<Equipment> paintballEquipmentList, List<Equipment> climbingEquipmentList, List<Equipment> goKartEquipmentList, Set<EquipmentType> paintballEquipmentTypes, Set<EquipmentType> climbingEquipmentTypes, Set<EquipmentType> goKartEquipmentTypes) {
-        List<Activity> activities = new ArrayList<>(List.of(
-                new Activity("Paintball", "Paintball is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, paintballEquipmentList, paintballEquipmentTypes),
-                new Activity("Climbing", "Climbing is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, climbingEquipmentList, climbingEquipmentTypes),
-                new Activity("Go-kart", "Go-kart is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, goKartEquipmentList, goKartEquipmentTypes)
-        ));
-        return activityService.saveAllActivities(activities);
-    }
-
-    private void createBookings(List<Activity> activities) {
-        List<Booking> bookings = new ArrayList<>(List.of(
-                new Booking("John the Baptist", LocalDate.now(), LocalTime.of(10, 0), LocalTime.of(12, 0), activities.get(0).getPersonsMax(), activities.get(0)), // Paintball
-                new Booking("Francis of Assisi", LocalDate.now(), LocalTime.of(12, 0), LocalTime.of(14, 0), 6, activities.get(0)), // Paintball 2 booking
-                new Booking("Soeren Pind", LocalDate.now(), LocalTime.of(14, 0), LocalTime.of(16, 0), 8, activities.get(0)), // Paintball 3 booking
-                new Booking("Scooby-Doo", LocalDate.now(), LocalTime.of(10, 0), LocalTime.of(12, 0), activities.get(1).getPersonsMax(), activities.get(1)), // Climbing
-                new Booking("Mickey Mouse", LocalDate.now(), LocalTime.of(12, 0), LocalTime.of(14, 0), 6, activities.get(1)), // Climbing 2 booking
-                new Booking("John Lennon", LocalDate.now(), LocalTime.of(14, 0), LocalTime.of(16, 0), 8, activities.get(1)), // Climbing 3 booking
-                new Booking("George Harrison", LocalDate.now(), LocalTime.of(10, 0), LocalTime.of(12, 0), activities.get(2).getPersonsMax(), activities.get(2)), // Go-kart
-                new Booking("Margrethe den Foerste", LocalDate.now(), LocalTime.of(12, 0), LocalTime.of(14, 0), 6, activities.get(2)), // Go-kart 2 booking
-                new Booking("Churchill", LocalDate.now(), LocalTime.of(14, 0), LocalTime.of(16, 0), 8, activities.get(2)) // Go-kart 3 booking
-        ));
-        bookingRepository.saveAll(bookings);
-    }
-
-
 
     private List<Equipment> findEquipmentList(List<Equipment> equipments) {
         List<Equipment> foundEquipment = new ArrayList<>();
