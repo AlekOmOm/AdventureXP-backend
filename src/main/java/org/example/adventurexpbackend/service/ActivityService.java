@@ -167,17 +167,4 @@ public class ActivityService {
     }
 
 
-
-
-    @Transactional
-    public void updateEquipmentList(Long activityId, List<Equipment> newEquipmentList) {
-        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new IllegalArgumentException("Invalid activity id"));
-        activity.getEquipmentList().clear();
-        activity.getEquipmentList().addAll(newEquipmentList);
-        activityRepository.save(activity);
-    }
-
-    public void delete(Activity activity) {
-        activityRepository.delete(activity);
-    }
 }
