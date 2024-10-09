@@ -6,6 +6,7 @@ import org.example.adventurexpbackend.model.TimeSlot;
 import org.example.adventurexpbackend.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -36,12 +37,11 @@ public class BookingService {
         }
     }
 
-    // Method to get available TimeSlots for a specific activity and date
     public List<TimeSlot> getAvailableTimes(Activity activity, LocalDate date, int personsAmount) {
-        // Fetch all timeslots for the activity
+        // gets oru all timeslots for the activity
         List<TimeSlot> availableTimeSlots = new ArrayList<>(activity.getTimeSlots());
 
-        // Fetch bookings for the given date and filter out timeslots that are already booked
+        // Fetch and filter so only available slot is returned
         List<Booking> bookingsAtDate = getBookingsByDate(activity, date);
 
         for (Booking booking : bookingsAtDate) {
@@ -56,7 +56,7 @@ public class BookingService {
     }
 
     // ----------------- CRUD Operations ---------------------
-
+    @Transactional
     public boolean createBooking(Booking booking) {
         Activity activity = activityService.getActivity(booking.getActivity());
 
@@ -84,7 +84,7 @@ public class BookingService {
             }
         }
 
-        return false;//if no free timeslot
+        return false;
     }
 
     public Booking getBookingById(Long id) {

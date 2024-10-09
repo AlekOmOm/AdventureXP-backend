@@ -92,3 +92,52 @@ public class BookingRESTController {
         } else {return new ResponseEntity<>(HttpStatus.NO_CONTENT);}
     }
 }
+//----------------------------------------------------------------------------------------------------------------------
+// Endpoint to book a specific timeslot for an activity gry
+@PostMapping("/book-timeslot")
+public ResponseEntity<String> bookTimeSlot(
+        @RequestParam Long activityId,
+        @RequestParam Long timeSlotId,
+        @RequestParam String participantName,
+        @RequestParam int personsAmount) {
+
+    // Fetch the activity by ID
+    Optional<Activity> activityOptional = Optional.ofNullable(activityService.getActivityById(activityId));
+    if (activityOptional.isEmpty()) {
+        return new ResponseEntity<>("Activity not found", HttpStatus.NOT_FOUND);
+    }
+
+    Activity activity = activityOptional.get();
+
+    // Fetch the timeslot by ID
+    Optional<TimeSlot> timeSlotOptional = activity.getTimeSlots().stream()
+            .filter(ts -> ts.getId().equals(timeSlotId))
+            .findFirst();
+
+    if (timeSlotOptional.isEmpty()) {
+        return new ResponseEntity<>("Timeslot is sadly not found", HttpStatus.NOT_FOUND);
+    }
+    TimeSlot timeSlot = timeSlotOptional.get();
+
+    // Checkings if the timeslot is available
+    if (!timeSlot.isAvailable()) {
+        return new ResponseEntity<>("Timeslot is already in use ", HttpStatus.BAD_REQUEST);
+    }
+
+    Booking booking = new Booking();
+    booking.setActivity(activity);
+    booking.setDate(timeSlot.getDate());
+    booking.setStartTime(timeSlot.getStartTime());
+    booking.setEndTime(timeSlot.getEndTime());
+    booking.setPersonsAmount(personsAmount);
+    booking.setParticipantName(participantName);
+    boolean isBookingCreated = bookingService.createBooking(booking);
+
+    if (!isBookingCreated) {
+        return new ResponseEntity<>("Failed to create booking", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    timeSlot.setAvailable(false);
+    activityService.saveActivity(activity);
+
+    return ResponseEntity.status(HttpStatus.CREATED).body("Timeslot booked successfully");
+}
