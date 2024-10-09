@@ -1,4 +1,3 @@
-
 package org.example.adventurexpbackend.config;
 
 import org.example.adventurexpbackend.model.Activity;
@@ -43,7 +42,9 @@ public class InitData implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        sequenceResetter.resetSequences();
+        clearDB();
+        long[] startValues = getStartValues();
+        sequenceResetter.resetSequences(startValues[0], startValues[1], startValues[2], startValues[3]);
 
         Set<EquipmentType> paintballEquipmentTypes = createPaintballEquipmentTypes();
         Set<EquipmentType> climbingEquipmentTypes = createClimbingEquipmentTypes();
@@ -55,6 +56,22 @@ public class InitData implements CommandLineRunner {
 
         List<Activity> activities = createActivities(paintballEquipmentList, climbingEquipmentList, goKartEquipmentList, paintballEquipmentTypes, climbingEquipmentTypes, goKartEquipmentTypes);
         createBookings(activities);
+    }
+
+    private void clearDB() {
+        bookingRepository.deleteAll();
+        activityRepository.deleteAll();
+        equipmentRepository.deleteAll();
+        equipmentTypeRepository.deleteAll();
+    }
+
+    private long[] getStartValues() {
+        return new long[]{
+                activityRepository.findAll().isEmpty() ? 1 : activityRepository.findAll().get(activityRepository.findAll().size()-1).getId() + 1,
+                equipmentRepository.findAll().isEmpty() ? 1 : equipmentRepository.findAll().get(equipmentRepository.findAll().size()-1).getId() + 1,
+                equipmentTypeRepository.findAll().isEmpty() ? 1 : equipmentTypeRepository.findAll().get(equipmentTypeRepository.findAll().size()-1).getId() + 1,
+                bookingRepository.findAll().isEmpty() ? 1 : bookingRepository.findAll().get(bookingRepository.findAll().size()-1).getId() + 1
+        };
     }
 
     private Set<EquipmentType> createPaintballEquipmentTypes() {
@@ -104,6 +121,7 @@ public class InitData implements CommandLineRunner {
     }
 
     private List<Equipment> createGoKartEquipment() {
+
         return new ArrayList<>(List.of(
                 new Equipment("Go-kart car", true, false),
                 new Equipment("Go-kart helmet", true, false),
@@ -114,9 +132,9 @@ public class InitData implements CommandLineRunner {
 
     private List<Activity> createActivities(List<Equipment> paintballEquipmentList, List<Equipment> climbingEquipmentList, List<Equipment> goKartEquipmentList, Set<EquipmentType> paintballEquipmentTypes, Set<EquipmentType> climbingEquipmentTypes, Set<EquipmentType> goKartEquipmentTypes) {
         List<Activity> activities = new ArrayList<>(List.of(
-                new Activity("Paintball", "Paintball is a fun activity for everyone", 100, 120, 10, 100, 60, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, paintballEquipmentList, paintballEquipmentTypes),
-                new Activity("Climbing", "Climbing is a fun activity for everyone", 100, 120, 10, 100, 60, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, climbingEquipmentList, climbingEquipmentTypes),
-                new Activity("Go-kart", "Go-kart is a fun activity for everyone", 100, 120, 10, 100, 60, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, goKartEquipmentList, goKartEquipmentTypes)
+                new Activity("Paintball", "Paintball is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, paintballEquipmentList, paintballEquipmentTypes),
+                new Activity("Climbing", "Climbing is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, climbingEquipmentList, climbingEquipmentTypes),
+                new Activity("Go-kart", "Go-kart is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, goKartEquipmentList, goKartEquipmentTypes)
         ));
         return activityService.saveAllActivities(activities);
     }
