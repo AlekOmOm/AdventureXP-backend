@@ -14,6 +14,10 @@ import java.util.Optional;
 @Service
 public class ActivityService {
 
+    public Activity getActivityById(Long id) {
+        return activityRepository.findById(id).orElse(null);
+    }
+
     public Optional<Activity> findActivityById(Long id) {
         return activityRepository.findById(id);
     }

@@ -1,6 +1,5 @@
 package org.example.adventurexpbackend.service;
 
-
 import org.example.adventurexpbackend.model.Activity;
 import org.example.adventurexpbackend.model.Booking;
 import org.example.adventurexpbackend.model.TimeSlot;
@@ -12,7 +11,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.example.adventurexpbackend.dto.AvailableTimeSlot;
 
 @Service
 public class BookingService {
@@ -38,33 +36,23 @@ public class BookingService {
         }
     }
 
-    public List<AvailableTimeSlot> getAvailableTimes(Activity activity, LocalDate date, int personsAmount) {
+    // Method to get available TimeSlots for a specific activity and date
+    public List<TimeSlot> getAvailableTimes(Activity activity, LocalDate date, int personsAmount) {
+        // Fetch all timeslots for the activity
+        List<TimeSlot> availableTimeSlots = new ArrayList<>(activity.getTimeSlots());
+
+        // Fetch bookings for the given date and filter out timeslots that are already booked
         List<Booking> bookingsAtDate = getBookingsByDate(activity, date);
-        List<AvailableTimeSlot> availableTimeSlots = getTimeSlots(activity.getOpeningTime(), activity.getClosingTime(), activity.getTimeSlotInterval(), activity.getPersonsMax(), personsAmount);
 
         for (Booking booking : bookingsAtDate) {
-            List<AvailableTimeSlot> bookingTimeSlots = getTimeSlots(booking.getStartTime(), booking.getEndTime(), booking.getActivity().getTimeSlotInterval(), booking.getActivity().getPersonsMax(), booking.getPersonsAmount());
-
-            for (AvailableTimeSlot bookingTimeSlot : bookingTimeSlots) {
-                availableTimeSlots.removeIf(availableTimeSlot ->
-                        availableTimeSlot.getStartTime().isAfter(bookingTimeSlot.getStartTime()) &&
-                                availableTimeSlot.getEndTime().isBefore(bookingTimeSlot.getEndTime()) &&
-                                    availableTimeSlot.getAvailableSeats() < bookingTimeSlot.getAvailableSeats()
-                );
-            }
+            availableTimeSlots.removeIf(timeSlot ->
+                    timeSlot.getStartTime().isBefore(booking.getEndTime()) &&
+                            timeSlot.getEndTime().isAfter(booking.getStartTime()) &&
+                            timeSlot.getMaxParticipants() < booking.getPersonsAmount()
+            );
         }
 
-        return availableTimeSlots;
-    }
-
-    private static List<AvailableTimeSlot> getTimeSlots(LocalTime startTime, LocalTime endTime, int timeSlotInterval, int activityMaxParticipants, int bookingParticipants) {
-        List<AvailableTimeSlot> timeSlots = new ArrayList<>();
-        while (startTime.isBefore(endTime)) {
-            LocalTime slotEndTime = startTime.plusMinutes(timeSlotInterval);
-            timeSlots.add(new AvailableTimeSlot(startTime, slotEndTime, activityMaxParticipants, bookingParticipants));
-            startTime = slotEndTime;
-        }
-        return timeSlots;
+        return availableTimeSlots; // Return the list of available timeslots
     }
 
     // ----------------- CRUD Operations ---------------------
@@ -78,9 +66,9 @@ public class BookingService {
         }
 
         // Check if the requested timeslot is available
-        List<AvailableTimeSlot> availableTimeSlots = getAvailableTimes(activity, booking.getDate(), booking.getPersonsAmount());
+        List<TimeSlot> availableTimeSlots = getAvailableTimes(activity, booking.getDate(), booking.getPersonsAmount());
 
-        for (AvailableTimeSlot availableTimeSlot : availableTimeSlots) {
+        for (TimeSlot availableTimeSlot : availableTimeSlots) {
             if (booking.getStartTime().isAfter(availableTimeSlot.getStartTime()) && booking.getEndTime().isBefore(availableTimeSlot.getEndTime())) {
 
                 // Reserve the timeslot
@@ -89,14 +77,14 @@ public class BookingService {
                 // Save booking
                 bookingRepository.save(booking);
 
-                // Update the TimeSlot
+                // Update TimeSlot
                 updateTimeSlotAvailability(activity, booking.getStartTime(), booking.getEndTime());
 
                 return true;
             }
         }
 
-        return false; // No available timeslot
+        return false;//if no free timeslot
     }
 
     public Booking getBookingById(Long id) {
@@ -121,18 +109,16 @@ public class BookingService {
 
     // ----------------- Helper Methods ---------------------
 
-
-//Updating fot timeslot availability
+    // Update the availability of a TimeSlot when booked
     private void updateTimeSlotAvailability(Activity activity, LocalTime bookingStartTime, LocalTime bookingEndTime) {
 
         for (TimeSlot timeSlot : activity.getTimeSlots()) {
             if (timeSlot.getStartTime().equals(bookingStartTime) && timeSlot.getEndTime().equals(bookingEndTime)) {
-                // Marking timeslot as unavailable
 
                 timeSlot.setAvailable(false);
                 break;
             }
         }
-        activityService.saveActivity(activity);//saving
+        activityService.saveActivity(activity); // Save the updated activity
     }
 }
