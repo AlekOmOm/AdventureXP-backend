@@ -7,7 +7,6 @@ import org.example.adventurexpbackend.repository.ActivityRepository;
 import org.example.adventurexpbackend.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -27,7 +26,6 @@ public class TimeslotService {
 
     //------------------------------------------------------------------------------------------------------------------
     // Method to book a timeslot for a specific activity
-    @Transactional
     public String bookTimeSlot(Long activityId, Long timeslotId, Booking booking) {
         Optional<Activity> activityOptional = activityRepository.findById(activityId);
 

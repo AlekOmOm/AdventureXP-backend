@@ -110,6 +110,7 @@ public class BookingService {
     // ----------------- Helper Methods ---------------------
 
     // Update the availability of a TimeSlot when booked
+    @Transactional
     private void updateTimeSlotAvailability(Activity activity, LocalTime bookingStartTime, LocalTime bookingEndTime) {
 
         for (TimeSlot timeSlot : activity.getTimeSlots()) {
