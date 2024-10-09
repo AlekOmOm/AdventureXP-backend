@@ -2,6 +2,7 @@ package org.example.adventurexpbackend.service;
 
 import org.example.adventurexpbackend.config.SequenceResetter;
 import org.example.adventurexpbackend.model.Activity;
+import org.example.adventurexpbackend.model.Equipment;
 import org.example.adventurexpbackend.repository.ActivityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,6 +60,15 @@ public class ActivityService {
         } else {
             return activityRepository.findByName(activity.getName());
         }
+    }
+
+
+    @Transactional
+    public void updateEquipmentList(Long activityId, List<Equipment> newEquipmentList) {
+        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new IllegalArgumentException("Invalid activity id"));
+        activity.getEquipmentList().clear();
+        activity.getEquipmentList().addAll(newEquipmentList);
+        activityRepository.save(activity);
     }
 
     public void delete(Activity activity) {
