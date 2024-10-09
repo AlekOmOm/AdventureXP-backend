@@ -111,7 +111,7 @@ public class BookingService {
 
     // Update the availability of a TimeSlot when booked
     @Transactional
-    private void updateTimeSlotAvailability(Activity activity, LocalTime bookingStartTime, LocalTime bookingEndTime) {
+    public void updateTimeSlotAvailability(Activity activity, LocalTime bookingStartTime, LocalTime bookingEndTime) {
 
         for (TimeSlot timeSlot : activity.getTimeSlots()) {
             if (timeSlot.getStartTime().equals(bookingStartTime) && timeSlot.getEndTime().equals(bookingEndTime)) {
