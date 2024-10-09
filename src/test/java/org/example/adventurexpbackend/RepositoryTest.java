@@ -43,7 +43,7 @@ public class RepositoryTest {
         Booking booking = bookings.get(bookings.size()/2);
         booking.setId(null);
         booking.setPersonsAmount(1);
-        bookingService.createBooking(booking);
+        bookingService.book(booking);
 
         List<Booking> bookingsAfterSave = bookingService.getAllBookings();
         Long lastIdAfter = bookingsAfterSave.getLast().getId();
