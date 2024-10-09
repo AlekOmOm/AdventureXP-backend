@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.example.adventurexpbackend.dto.AvailableTimeSlot;
+import org.example.adventurexpbackend.controller.dto.AvailableTimeSlot;
 import org.springframework.web.client.RestTemplate;
 
 @Service
