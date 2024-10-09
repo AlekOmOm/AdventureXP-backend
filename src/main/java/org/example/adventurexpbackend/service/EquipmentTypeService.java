@@ -36,4 +36,11 @@ public class EquipmentTypeService {
         return equipmentTypeRepository.save(equipmentType);
     }
 
+    public EquipmentType get(EquipmentType equipmentType) {
+        if(equipmentType.getId() != null) {
+            return equipmentTypeRepository.findById(equipmentType.getId()).orElse(null);
+        } else {
+            return equipmentTypeRepository.findByName(equipmentType.getName());
+        }
+    }
 }

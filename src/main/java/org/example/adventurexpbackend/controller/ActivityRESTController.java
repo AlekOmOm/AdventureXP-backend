@@ -107,8 +107,11 @@ public class ActivityRESTController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteActivityById(@PathVariable Long id) {
         System.out.println("Deleting activity with ID: " + id);
-        Activity activity = new Activity();
-        activity.setId(id);
+
+        Activity activity = activityService.getActivityById(id).get();
+
+        System.out.println(" Activity: " + activity);
+
         activityService.delete(activity);
         System.out.println("Activity with ID " + id + " deleted");
         return ResponseEntity.noContent().build();

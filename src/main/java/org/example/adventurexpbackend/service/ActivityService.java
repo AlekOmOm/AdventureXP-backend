@@ -4,15 +4,14 @@ import org.example.adventurexpbackend.config.SequenceResetter;
 import org.example.adventurexpbackend.model.Activity;
 import org.example.adventurexpbackend.model.Booking;
 import org.example.adventurexpbackend.model.Equipment;
+import org.example.adventurexpbackend.model.EquipmentType;
 import org.example.adventurexpbackend.repository.ActivityRepository;
 import org.example.adventurexpbackend.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ActivityService {
@@ -33,6 +32,7 @@ public class ActivityService {
     public Activity saveActivity(Activity activity) {
         System.out.println("Debug: ActivityService: saveActivity");
         System.out.println(" Activity: " + activity);
+        multiplyEquipmentTypes(activity);
         return activityRepository.save(activity);
     }
 
@@ -61,8 +61,24 @@ public class ActivityService {
 
     @Transactional
     public void delete(Activity activity) {
+        System.out.println("Debug: ActivityService: delete ");
+        System.out.println(" Activity: " + activity);
+
+        // Retrieve the list of bookings associated with the activity
         List<Booking> bookings = bookingRepository.findByActivity(activity);
+
+        // Delete all retrieved bookings
         bookingRepository.deleteAll(bookings);
+
+        // Verify that all bookings have been deleted
+        List<Booking> bookingsDeleted = bookingRepository.findByActivity(activity);
+
+        // If any bookings remain, throw an exception
+        if (!bookingsDeleted.isEmpty()) {
+            throw new IllegalArgumentException("Activity has bookings");
+        }
+
+        // Delete the activity
         activityRepository.delete(activity);
     }
 
@@ -124,12 +140,23 @@ public class ActivityService {
             existingActivity.getEquipmentList().addAll(activity.getEquipmentList());
             existingActivity.getEquipmentTypes().clear();
             existingActivity.getEquipmentTypes().addAll(activity.getEquipmentTypes());
+            multiplyEquipmentTypes(existingActivity);
             return activityRepository.save(existingActivity);
         } else {
             throw new IllegalArgumentException("Activity not found");
         }
     }
 
+    private void multiplyEquipmentTypes(Activity activity) {
+        List<Equipment> multipliedEquipmentList = new ArrayList<>();
+        for (EquipmentType equipmentType : activity.getEquipmentTypes()) {
+            for (int i = 0; i < activity.getPersonsMax(); i++) {
+                Equipment equipment = new Equipment(equipmentType.getName(), true, false);
+                multipliedEquipmentList.add(equipment);
+            }
+        }
+        activity.setEquipmentList(multipliedEquipmentList);
+    }
     private static Activity getActivity(Activity activity, Optional<Activity> existingActivityOpt) {
         if (!existingActivityOpt.isPresent()) {
             throw new IllegalArgumentException("Activity not found");
