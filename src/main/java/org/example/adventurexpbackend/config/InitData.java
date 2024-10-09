@@ -1,5 +1,6 @@
 package org.example.adventurexpbackend.config;
 
+import com.zaxxer.hikari.util.FastList;
 import org.example.adventurexpbackend.model.Activity;
 import org.example.adventurexpbackend.model.Booking;
 import org.example.adventurexpbackend.model.Equipment;
@@ -9,9 +10,12 @@ import org.example.adventurexpbackend.repository.BookingRepository;
 import org.example.adventurexpbackend.repository.EquipmentRepository;
 import org.example.adventurexpbackend.repository.EquipmentTypeRepository;
 import org.example.adventurexpbackend.service.ActivityService;
+import org.example.adventurexpbackend.service.EquipmentService;
+import org.example.adventurexpbackend.service.EquipmentTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -29,18 +33,23 @@ public class InitData implements CommandLineRunner {
     private final BookingRepository bookingRepository;
     private final SequenceResetter sequenceResetter;
     private final ActivityService activityService;
+    private final EquipmentService equipmentService;
+    private final EquipmentTypeService equipmentTypeService;
 
     @Autowired
-    public InitData(ActivityRepository activityRepository, EquipmentRepository equipmentRepository, EquipmentTypeRepository equipmentTypeRepository, BookingRepository bookingRepository, SequenceResetter sequenceResetter, ActivityService activityService) {
+    public InitData(ActivityRepository activityRepository, EquipmentRepository equipmentRepository, EquipmentTypeRepository equipmentTypeRepository, BookingRepository bookingRepository, SequenceResetter sequenceResetter, ActivityService activityService, EquipmentService equipmentService, EquipmentTypeService equipmentTypeService) {
         this.activityRepository = activityRepository;
         this.equipmentRepository = equipmentRepository;
         this.equipmentTypeRepository = equipmentTypeRepository;
         this.bookingRepository = bookingRepository;
         this.sequenceResetter = sequenceResetter;
         this.activityService = activityService;
+        this.equipmentService = equipmentService;
+        this.equipmentTypeService = equipmentTypeService;
     }
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
         clearDB();
         long[] startValues = getStartValues();
@@ -56,6 +65,8 @@ public class InitData implements CommandLineRunner {
 
         List<Activity> activities = createActivities(paintballEquipmentList, climbingEquipmentList, goKartEquipmentList, paintballEquipmentTypes, climbingEquipmentTypes, goKartEquipmentTypes);
         createBookings(activities);
+
+        deleteActivity();
     }
 
     private void clearDB() {
@@ -63,6 +74,39 @@ public class InitData implements CommandLineRunner {
         activityRepository.deleteAll();
         equipmentRepository.deleteAll();
         equipmentTypeRepository.deleteAll();
+    }
+
+    @Transactional
+    public void deleteActivity() {
+        List<Activity> activities = activityRepository.findAll();
+        if (!activities.isEmpty()) {
+            Activity activity = activities.get(0);
+            System.out.println("Debug deleteActivity");
+            System.out.println(" Activity: " + activity);
+            Long activityId = activity.getId();
+            List<Equipment> equipments = activity.getEquipmentList();
+            Set<EquipmentType> equipmentTypes = activity.getEquipmentTypes();
+
+            System.out.println(" Equipments: " + equipments);
+            System.out.println(" EquipmentTypes: " + equipmentTypes);
+
+            // Use activityService to delete the activity
+            activityService.delete(activity);
+
+            // check if activity is deleted
+            Activity deletedActivity = activityRepository.findById(activityId).orElse(null);
+
+            // check if equipment is deleted
+            List<Equipment> deletedEquipments = findEquipmentList(equipments);
+
+            // check if equipmentType is deleted
+            Set<EquipmentType> deletedEquipmentTypes = findEquipmentTypeSet(equipmentTypes);
+
+            System.out.println("Debug deleteActivity");
+            System.out.println(" Deleted activity: " + deletedActivity);
+            System.out.println(" Deleted equipments: " + deletedEquipments);
+            System.out.println(" Deleted equipmentTypes: " + deletedEquipmentTypes);
+        }
     }
 
     private long[] getStartValues() {
@@ -153,4 +197,23 @@ public class InitData implements CommandLineRunner {
         ));
         bookingRepository.saveAll(bookings);
     }
+
+
+
+    private List<Equipment> findEquipmentList(List<Equipment> equipments) {
+        List<Equipment> foundEquipment = new ArrayList<>();
+        for (Equipment equipment : equipments) {
+            foundEquipment.add(equipmentService.get(equipment));
+        }
+        return foundEquipment;
+    }
+
+    private Set<EquipmentType> findEquipmentTypeSet(Set<EquipmentType> equipmentTypes) {
+        Set<EquipmentType> foundEquipmentTypes = new HashSet<>();
+        for (EquipmentType equipmentType : equipmentTypes) {
+            foundEquipmentTypes.add(equipmentTypeService.get(equipmentType));
+        }
+        return foundEquipmentTypes;
+    }
+
 }

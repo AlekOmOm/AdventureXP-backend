@@ -61,8 +61,24 @@ public class ActivityService {
 
     @Transactional
     public void delete(Activity activity) {
+        System.out.println("Debug: ActivityService: delete ");
+        System.out.println(" Activity: " + activity);
+
+        // Retrieve the list of bookings associated with the activity
         List<Booking> bookings = bookingRepository.findByActivity(activity);
+
+        // Delete all retrieved bookings
         bookingRepository.deleteAll(bookings);
+
+        // Verify that all bookings have been deleted
+        List<Booking> bookingsDeleted = bookingRepository.findByActivity(activity);
+
+        // If any bookings remain, throw an exception
+        if (!bookingsDeleted.isEmpty()) {
+            throw new IllegalArgumentException("Activity has bookings");
+        }
+
+        // Delete the activity
         activityRepository.delete(activity);
     }
 

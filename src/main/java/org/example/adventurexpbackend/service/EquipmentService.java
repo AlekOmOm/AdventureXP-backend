@@ -20,24 +20,29 @@ public class EquipmentService {
         this.restTemplate = restTemplate;
     }
 
-    // CRUD operations
+    // ----------------- Operations ---------------------
 
 
     public Equipment save(Equipment equipment) {
         return equipmentRepository.save(equipment);
     }
 
-    // Retrieve all equipment
     public Iterable<Equipment> getAllEquipment() {
         return equipmentRepository.findAll();
     }
 
-    // Retrieve equipment by id
+    public Equipment get(Equipment equipment) {
+        if(equipment.getId() != null) {
+            return equipmentRepository.findById(equipment.getId()).orElse(null);
+        } else {
+            return equipmentRepository.findByName(equipment.getName());
+        }
+    }
+
     public Optional<Equipment> getEquipmentById(Long id) {
         return equipmentRepository.findById(id);
     }
 
-    // Retrieve equipment by name
     public Optional<Equipment> getEquipmentByName(String name) {
         return Optional.ofNullable(equipmentRepository.findByName(name));
     }
