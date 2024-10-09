@@ -3,6 +3,7 @@ package org.example.adventurexpbackend.service;
 
 import org.example.adventurexpbackend.model.Activity;
 import org.example.adventurexpbackend.model.Booking;
+import org.example.adventurexpbackend.model.TimeSlot;
 import org.example.adventurexpbackend.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -112,4 +113,19 @@ public class BookingService {
     }
 
     // ----------------- Helper Methods ---------------------
+
+
+//Updating fot timeslot availability
+    private void updateTimeSlotAvailability(Activity activity, LocalTime bookingStartTime, LocalTime bookingEndTime) {
+
+        for (TimeSlot timeSlot : activity.getTimeSlots()) {
+            if (timeSlot.getStartTime().equals(bookingStartTime) && timeSlot.getEndTime().equals(bookingEndTime)) {
+                // Marking timeslot as unavailable
+
+                timeSlot.setAvailable(false);
+                break;
+            }
+        }
+        activityService.saveActivity(activity);//saving
+    }
 }
