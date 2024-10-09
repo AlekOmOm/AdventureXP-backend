@@ -75,7 +75,7 @@ public class BookingRESTController {
             @RequestParam String date,
             @RequestParam int personsAmount) {
 
-        Optional<Activity> activityOptional = Optional.ofNullable(activityService.getActivityById(activityId));
+        Optional<Activity> activityOptional = activityService.getActivityById(activityId);
         if (activityOptional.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -98,9 +98,10 @@ public class BookingRESTController {
     public ResponseEntity<String> bookTimeSlot(@RequestParam Long activityId, @RequestParam Long timeSlotId, @RequestParam String participantName, @RequestParam int personsAmount) {
 
 
-        Optional<Activity> activityOptional = Optional.ofNullable(activityService.getActivityById(activityId));
+        Optional<Activity> activityOptional = activityService.getActivityById(activityId);
         if (activityOptional.isEmpty()) {
-            return new ResponseEntity<>("Activity not found bruh", HttpStatus.NOT_FOUND);}
+            return new ResponseEntity<>("Activity not found bruh", HttpStatus.NOT_FOUND);
+        }
 
 
         Activity activity = activityOptional.get();
@@ -111,6 +112,7 @@ public class BookingRESTController {
         if (timeSlotOptional.isEmpty()) {
             return new ResponseEntity<>("Timeslot is sadly not found", HttpStatus.NOT_FOUND);
         }
+
         TimeSlot timeSlot = timeSlotOptional.get();
 
         // Checkings if the timeslot is available
@@ -126,9 +128,9 @@ public class BookingRESTController {
         booking.setPersonsAmount(personsAmount);
         booking.setParticipantName(participantName);
 
-        boolean isBookingCreated = bookingService.createBooking(booking);
+        Booking bookingCreated = bookingService.book(booking);
 
-        if (!isBookingCreated) {
+        if (bookingCreated == null) {
             return new ResponseEntity<>("Fail", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         timeSlot.setAvailable(false);
