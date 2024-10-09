@@ -65,7 +65,7 @@ public class BookingService {
     // ----------------- CRUD Operations ---------------------
     @Transactional
     private Booking createBooking(Booking booking) {
-        Activity activity = activityService.getActivity(booking.getActivity());
+        Activity activity = activityService.updateActivityFromExistent(booking.getActivity());
 
         // check if activity exists
         if (activity == null) {

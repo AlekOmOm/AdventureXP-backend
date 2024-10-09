@@ -45,7 +45,7 @@ public class ActivityRESTController {
     @PutMapping("/{id}")
     public ResponseEntity<Activity> updateActivity(@PathVariable Long id, @RequestBody Activity activity) {
         System.out.println("Updating activity with ID: " + id);
-        Optional<Activity> existingActivity = Optional.ofNullable(activityService.getActivity(activity));
+        Optional<Activity> existingActivity = Optional.ofNullable(activityService.updateActivityFromExistent(activity));
         System.out.println("updateActivity");
         System.out.println(" Activity: " + activity);
         System.out.println(" ExistingActivity: " + existingActivity);
@@ -67,7 +67,7 @@ public class ActivityRESTController {
     public ResponseEntity<Void> updateEquipmentList(@PathVariable Long id, @RequestBody List<Equipment> newEquipmentList) {
         System.out.println("Updating equipment list for activity with ID: " + id);
         try {
-            activityService.updateEquipmentList(id, newEquipmentList);
+            activityService.updateEquipmentForActivity(id, newEquipmentList);
             System.out.println("Equipment list updated for activity with ID: " + id);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
@@ -82,7 +82,7 @@ public class ActivityRESTController {
         System.out.println("Retrieving activity with ID: " + id);
         Activity activity = new Activity();
         activity.setId(id);
-        Optional<Activity> existingActivity = Optional.ofNullable(activityService.getActivity(activity));
+        Optional<Activity> existingActivity = Optional.ofNullable(activityService.updateActivityFromExistent(activity));
         if (existingActivity.isPresent()) {
             System.out.println("Activity retrieved: " + existingActivity.get());
             return ResponseEntity.ok(existingActivity.get());
@@ -98,7 +98,7 @@ public class ActivityRESTController {
         System.out.println("Retrieving activity with name: " + name);
         Activity activity = new Activity();
         activity.setName(name);
-        Optional<Activity> existingActivity = Optional.ofNullable(activityService.getActivity(activity));
+        Optional<Activity> existingActivity = Optional.ofNullable(activityService.updateActivityFromExistent(activity));
         if (existingActivity.isPresent()) {
             System.out.println("Activity retrieved: " + existingActivity.get());
             return ResponseEntity.ok(existingActivity.get());
