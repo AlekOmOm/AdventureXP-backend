@@ -43,6 +43,7 @@ public class InitData implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        clearDB();
         sequenceResetter.resetSequences();
 
         Set<EquipmentType> paintballEquipmentTypes = createPaintballEquipmentTypes();
@@ -55,6 +56,13 @@ public class InitData implements CommandLineRunner {
 
         List<Activity> activities = createActivities(paintballEquipmentList, climbingEquipmentList, goKartEquipmentList, paintballEquipmentTypes, climbingEquipmentTypes, goKartEquipmentTypes);
         createBookings(activities);
+    }
+
+    private void clearDB() {
+        bookingRepository.deleteAll();
+        activityRepository.deleteAll();
+        equipmentRepository.deleteAll();
+        equipmentTypeRepository.deleteAll();
     }
 
     private Set<EquipmentType> createPaintballEquipmentTypes() {
