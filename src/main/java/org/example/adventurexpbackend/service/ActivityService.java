@@ -98,6 +98,8 @@ public class ActivityService {
         if (!existingActivityOpt.isPresent()) {
             throw new IllegalArgumentException("Activity not found");
         }
+        return existingActivityOpt.get();
+    }
 
     @Transactional
     public void updateEquipmentForActivity(Long activityId, List<Equipment> newEquipmentList) {
@@ -116,7 +118,6 @@ public class ActivityService {
     }
 
 
-    // Delete activity by id
     // ------------------- Delete -------------------
 
     @Transactional
