@@ -69,27 +69,27 @@ public class BookingRESTController {
 
     //-------------------------------------------------------------------------------------
     // Endpoint to get all available timeslots for a specific activity and deto
-    @GetMapping("/available-timeslots")
-    public ResponseEntity<List<TimeSlot>> getAvailableTimeSlots(
-            @RequestParam Long activityId,
-            @RequestParam String date,
-            @RequestParam int personsAmount) {
 
-        Optional<Activity> activityOptional = Optional.ofNullable(activityService.getActivityById(activityId));
+    @GetMapping("/available-timeslots")
+    public ResponseEntity<List<TimeSlot>> getAvailableTimeSlots(@RequestParam Long activityId, @RequestParam String date, @RequestParam int personsAmount) {
+
+        Optional<Activity> activityOptional = activityService.getActivityById(activityId);  // No need for Optional.ofNullable()
         if (activityOptional.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Activity activity = activityOptional.get();
-
         LocalDate bookingDate;
         try {
-            bookingDate = LocalDate.parse(date);}
-        catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);}
-        List<TimeSlot> availableTimeSlots = bookingService.getAvailableTimes(activity, bookingDate, personsAmount);
-        if (!availableTimeSlots.isEmpty()) {return new ResponseEntity<>(availableTimeSlots, HttpStatus.OK);
-        } else {return new ResponseEntity<>(HttpStatus.NO_CONTENT);}
+            bookingDate = LocalDate.parse(date);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        List<TimeSlot> availableTimeSlots = bookingService.getAvailableTimes(activityOptional.get(), bookingDate, personsAmount);
+
+        return availableTimeSlots.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(availableTimeSlots);
     }
 
     //----------------------------------------------------------------------------------------------------------------------
@@ -97,11 +97,10 @@ public class BookingRESTController {
     @PostMapping("/book-timeslot")
     public ResponseEntity<String> bookTimeSlot(@RequestParam Long activityId, @RequestParam Long timeSlotId, @RequestParam String participantName, @RequestParam int personsAmount) {
 
-
-        Optional<Activity> activityOptional = Optional.ofNullable(activityService.getActivityById(activityId));
+        Optional<Activity> activityOptional = activityService.getActivityById(activityId);  // No need for Optional.ofNullable()
         if (activityOptional.isEmpty()) {
-            return new ResponseEntity<>("Activity not found bruh", HttpStatus.NOT_FOUND);}
-
+            return new ResponseEntity<>("Activity not found", HttpStatus.NOT_FOUND);
+        }
 
         Activity activity = activityOptional.get();
         Optional<TimeSlot> timeSlotOptional = activity.getTimeSlots().stream()
@@ -109,13 +108,12 @@ public class BookingRESTController {
                 .findFirst();
 
         if (timeSlotOptional.isEmpty()) {
-            return new ResponseEntity<>("Timeslot is sadly not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Timeslot not found", HttpStatus.NOT_FOUND);
         }
-        TimeSlot timeSlot = timeSlotOptional.get();
 
-        // Checkings if the timeslot is available
+        TimeSlot timeSlot = timeSlotOptional.get();
         if (!timeSlot.isAvailable()) {
-            return new ResponseEntity<>("Timeslot is already in use (too bad) ", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Timeslot is already booked", HttpStatus.BAD_REQUEST);
         }
 
         Booking booking = new Booking();
@@ -126,16 +124,16 @@ public class BookingRESTController {
         booking.setPersonsAmount(personsAmount);
         booking.setParticipantName(participantName);
 
-        boolean isBookingCreated = bookingService.createBooking(booking);
+        Booking createdBooking = bookingService.createBooking(booking);
 
-        if (!isBookingCreated) {
-            return new ResponseEntity<>("Fail", HttpStatus.INTERNAL_SERVER_ERROR);
+        if (createdBooking == null) {
+            return new ResponseEntity<>("Booking failed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
         timeSlot.setAvailable(false);
         activityService.saveActivity(activity);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("woop woop Timeslot booked successfully woop woop");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Timeslot booked successfully");
     }
-
 }
 

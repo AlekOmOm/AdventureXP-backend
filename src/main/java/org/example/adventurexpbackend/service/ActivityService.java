@@ -1,5 +1,6 @@
 package org.example.adventurexpbackend.service;
 
+import org.example.adventurexpbackend.config.SequenceResetter;
 import org.example.adventurexpbackend.model.Activity;
 import org.example.adventurexpbackend.model.TimeSlot;
 import org.example.adventurexpbackend.model.Booking;
@@ -17,30 +18,21 @@ import java.util.Optional;
 @Service
 public class ActivityService {
 
-    public Activity getActivityById(Long id) {
-        return activityRepository.findById(id).orElse(null);
-    }
-
-    public Optional<Activity> findActivityById(Long id) {
-        return activityRepository.findById(id);
-    }
-
     private final ActivityRepository activityRepository;
     private final SequenceResetter sequenceResetter;
     private final BookingRepository bookingRepository;
 
     @Autowired
-    public ActivityService(ActivityRepository activityRepository, BookingRepository bookingRepository,  SequenceResetter sequenceResetter) {
+    public ActivityService(ActivityRepository activityRepository, BookingRepository bookingRepository, SequenceResetter sequenceResetter) {
         this.activityRepository = activityRepository;
         this.sequenceResetter = sequenceResetter;
         this.bookingRepository = bookingRepository;
     }
 
     // ------------------- Create -------------------
+
     @Transactional
     public Activity saveActivity(Activity activity) {
-        System.out.println("Debug: ActivityService: saveActivity");
-        System.out.println(" Activity: " + activity);
         return activityRepository.save(activity);
     }
 
@@ -50,17 +42,13 @@ public class ActivityService {
 
         List<Activity> repoList = activityRepository.findAll();
         if (!repoList.isEmpty()) {
-            sequenceResetter.resetAutoIncrement("activity", repoList.getLast().getId() + 1);
+            sequenceResetter.resetAutoIncrement("activity", repoList.get(repoList.size() - 1).getId() + 1);
         }
 
         for (Activity activity : activities) {
-            savedActivities.add(saveActivity(activity)); // Transactional
+            savedActivities.add(saveActivity(activity));
         }
         return savedActivities;
-    }
-@Transactional
-    public Activity saveActivity(Activity activity) {
-        return activityRepository.save(activity);
     }
 
     @Transactional
@@ -78,11 +66,25 @@ public class ActivityService {
         activityRepository.delete(activity);
     }
 
-
     // ------------------- Read -------------------
 
-    public Activity getActivity(Activity activity) {
+    public Optional<Activity> getActivityById(Long id) {
+        return activityRepository.findById(id);
+    }
 
+    public Optional<Activity> getActivityByName(String name) {
+        return Optional.ofNullable(activityRepository.findByName(name));
+    }
+
+    public List<Activity> getAllActivities() {
+        List<Activity> activities = new ArrayList<>();
+        for (Activity activity : activityRepository.findAll()) {
+            activities.add(activity);
+        }
+        return activities;
+    }
+
+    public Activity getActivity(Activity activity) {
         if (activity.getId() != null) {
             return activityRepository.findById(activity.getId()).orElse(null);
         } else {
@@ -90,75 +92,27 @@ public class ActivityService {
         }
     }
 
-
-
-
-
-    //----------------------------------------------------------------------------------------------------------------------
-    private void loadTimeslots(TimeSlot timeSlot) {
-        if (timeSlot.isAvailable()) {
-            timeSlot.setAvailable(false);
-        }
-    }
-
     public Optional<Activity> getActivityOpt(Activity activity) {
-
         if (activity.getId() != null) {
             return getActivityById(activity.getId());
         } else {
             return getActivityByName(activity.getName());
         }
-
-    }
-
-    // Retrieve activity by id
-    public Optional<Activity> getActivityById(Long id) {
-        System.out.println("Debug: ActivityService: getActivityById: id: " + id);
-        Optional<Activity> activity =  activityRepository.findById(id);
-        System.out.println(" activity: " + activity);
-        return activity;
-    }
-
-    // Retrieve activity by name
-    public Optional<Activity> getActivityByName(String name) {
-        return Optional.ofNullable(activityRepository.findByName(name));
-    }
-
-    public List<Activity> getAllActivities() {
-        List <Activity> activities = new ArrayList<>();
-        System.out.println("Debug: Activity:");
-        for (Activity activity : activityRepository.findAll()) {
-            activities.add(activity);
-
-            System.out.println( " " + activity);
-        }
-        return activities;
     }
 
     // ------------------- Update -------------------
-        // if exists update, if not create
-
     @Transactional
     public Activity updateActivity(Activity activity) {
         Optional<Activity> existingActivityOpt = getActivityById(activity.getId());
         if (existingActivityOpt.isPresent()) {
-            Activity existingActivity = getActivity(activity, existingActivityOpt);
-            existingActivity.getEquipmentList().clear();
-            existingActivity.getEquipmentList().addAll(activity.getEquipmentList());
-            existingActivity.getEquipmentTypes().clear();
-            existingActivity.getEquipmentTypes().addAll(activity.getEquipmentTypes());
+            Activity existingActivity = updateExistingActivity(activity, existingActivityOpt.get());
             return activityRepository.save(existingActivity);
         } else {
             throw new IllegalArgumentException("Activity not found");
         }
     }
 
-    private static Activity getActivity(Activity activity, Optional<Activity> existingActivityOpt) {
-        if (!existingActivityOpt.isPresent()) {
-            throw new IllegalArgumentException("Activity not found");
-        }
-
-        Activity existingActivity = existingActivityOpt.get();
+    private static Activity updateExistingActivity(Activity activity, Activity existingActivity) {
         existingActivity.setName(activity.getName());
         existingActivity.setDescription(activity.getDescription());
         existingActivity.setPricePrPerson(activity.getPricePrPerson());
@@ -172,24 +126,21 @@ public class ActivityService {
         existingActivity.setTimeSlotInterval(activity.getTimeSlotInterval());
         existingActivity.setEquipmentList(activity.getEquipmentList());
         existingActivity.setEquipmentTypes(activity.getEquipmentTypes());
-
         return existingActivity;
     }
 
-
     // ------------------- Delete -------------------
-        // Delete activity by id
+
+    @Transactional
     public void deleteActivityById(Long id) {
         Optional<Activity> existingActivityOpt = activityRepository.findById(id);
-        if (existingActivityOpt.isPresent()) {
-            Activity existingActivity = existingActivityOpt.get();
-
-            activityRepository.delete(existingActivity);
-        }
+        existingActivityOpt.ifPresent(activityRepository::delete);
     }
 
-
-
+    // Helper for updating timeslots
+    private void loadTimeslots(TimeSlot timeSlot) {
+        if (timeSlot.isAvailable()) {
+            timeSlot.setAvailable(false);
+        }
+    }
 }
-
-

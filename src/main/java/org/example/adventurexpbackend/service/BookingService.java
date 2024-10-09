@@ -23,7 +23,6 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final ActivityService activityService;
     private final RestTemplate restTemplate;
-
     private final SequenceResetter sequenceResetter;
 
     @Autowired
@@ -35,9 +34,7 @@ public class BookingService {
     }
 
     // ----------------- Operations ---------------------
-
     public Booking book(Booking booking) {
-
         try {
             return createBooking(booking);
         } catch (Exception e) {
@@ -46,10 +43,10 @@ public class BookingService {
     }
 
     public List<TimeSlot> getAvailableTimes(Activity activity, LocalDate date, int personsAmount) {
-        // gets oru all timeslots for the activity
+        // Get all timeslots for the activity
         List<TimeSlot> availableTimeSlots = new ArrayList<>(activity.getTimeSlots());
 
-        // Fetch and filter so only available slot is returned
+        // Fetch and filter so only available timeslots are returned
         List<Booking> bookingsAtDate = getBookingsByDate(activity, date);
 
         for (Booking booking : bookingsAtDate) {
@@ -65,27 +62,25 @@ public class BookingService {
 
     // ----------------- CRUD Operations ---------------------
     @Transactional
-    public boolean createBooking(Booking booking) {
-
-    private Booking createBooking(Booking booking) {
+    public Booking createBooking(Booking booking) {
         Activity activity = activityService.getActivity(booking.getActivity());
 
-        // check if activity exists
+        // Check if activity exists
         if (activity == null) {
             System.out.println("DEBUG: BookingService.createBooking - Activity not found");
-            return false;
-            System.out.println("DEBUG: BookingService.createBooking");
-            System.out.println(" Activity not found");
             return null;
         }
 
-        // Check if the requested timeslot is available
+        // Capacity check: Ensure personsAmount does not exceed activity limit
+        if (booking.getPersonsAmount() > activity.getPersonsMax()) {
+            System.out.println("DEBUG: BookingService.createBooking - Persons limit exceeded");
+            return null;
+        }
+
         List<TimeSlot> availableTimeSlots = getAvailableTimes(activity, booking.getDate(), booking.getPersonsAmount());
 
         for (TimeSlot availableTimeSlot : availableTimeSlots) {
             if (booking.getStartTime().isAfter(availableTimeSlot.getStartTime()) && booking.getEndTime().isBefore(availableTimeSlot.getEndTime())) {
-
-                // Reserve the timeslot
                 booking.setActivity(activity);
 
                 // Save booking
@@ -93,22 +88,15 @@ public class BookingService {
 
                 // Update TimeSlot
                 updateTimeSlotAvailability(activity, booking.getStartTime(), booking.getEndTime());
-        // check capacity
-        if (booking.getPersonsAmount() > activity.getPersonsMax()) {
-            return null;
-        }
 
-        // db id reset
-        long startValue = getAllBookings().getLast().getId();
-        sequenceResetter.resetAutoIncrement("booking",startValue);
-
-                return true;
+                return booking;  // Return the created booking if successful
             }
         }
 
-        return false;
-        return bookingRepository.save(booking);
+        System.out.println("DEBUG: No available timeslot found for the booking.");
+        return null;  // Return null if no available timeslot was found
     }
+
 
     public Booking getBookingById(Long id) {
         return bookingRepository.findById(id).orElse(null);
@@ -140,18 +128,15 @@ public class BookingService {
     }
 
     // ----------------- Helper Methods ---------------------
-
     // Update the availability of a TimeSlot when booked
     @Transactional
     public void updateTimeSlotAvailability(Activity activity, LocalTime bookingStartTime, LocalTime bookingEndTime) {
-
         for (TimeSlot timeSlot : activity.getTimeSlots()) {
             if (timeSlot.getStartTime().equals(bookingStartTime) && timeSlot.getEndTime().equals(bookingEndTime)) {
-
                 timeSlot.setAvailable(false);
                 break;
             }
         }
-        activityService.saveActivity(activity); // Save the updated activity
+        activityService.saveActivity(activity);
     }
 }
