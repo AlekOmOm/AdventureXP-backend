@@ -1,4 +1,3 @@
-
 package org.example.adventurexpbackend.config;
 
 import org.example.adventurexpbackend.model.Activity;
@@ -44,7 +43,8 @@ public class InitData implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         clearDB();
-        sequenceResetter.resetSequences();
+        long[] startValues = getStartValues();
+        sequenceResetter.resetSequences(startValues[0], startValues[1], startValues[2], startValues[3]);
 
         Set<EquipmentType> paintballEquipmentTypes = createPaintballEquipmentTypes();
         Set<EquipmentType> climbingEquipmentTypes = createClimbingEquipmentTypes();
@@ -63,6 +63,15 @@ public class InitData implements CommandLineRunner {
         activityRepository.deleteAll();
         equipmentRepository.deleteAll();
         equipmentTypeRepository.deleteAll();
+    }
+
+    private long[] getStartValues() {
+        return new long[]{
+                activityRepository.findAll().isEmpty() ? 1 : activityRepository.findAll().get(activityRepository.findAll().size()-1).getId() + 1,
+                equipmentRepository.findAll().isEmpty() ? 1 : equipmentRepository.findAll().get(equipmentRepository.findAll().size()-1).getId() + 1,
+                equipmentTypeRepository.findAll().isEmpty() ? 1 : equipmentTypeRepository.findAll().get(equipmentTypeRepository.findAll().size()-1).getId() + 1,
+                bookingRepository.findAll().isEmpty() ? 1 : bookingRepository.findAll().get(bookingRepository.findAll().size()-1).getId() + 1
+        };
     }
 
     private Set<EquipmentType> createPaintballEquipmentTypes() {
