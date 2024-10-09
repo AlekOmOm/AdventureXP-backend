@@ -130,9 +130,7 @@ public class Activity {
         this.personsMin = personsMin;
     }
 
-    public int getPersonsMax() {
-        return personsMax;
-    }
+    public int getPersonsMax() {return personsMax;}
 
     public void setPersonsMax(int personsMax) {
         this.personsMax = personsMax;

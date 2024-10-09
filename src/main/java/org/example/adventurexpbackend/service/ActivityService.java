@@ -5,7 +5,6 @@ import org.example.adventurexpbackend.model.Activity;
 import org.example.adventurexpbackend.model.TimeSlot;
 import org.example.adventurexpbackend.model.Equipment;
 import org.example.adventurexpbackend.model.Booking;
-
 import org.example.adventurexpbackend.repository.ActivityRepository;
 import org.example.adventurexpbackend.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +17,6 @@ import java.util.Optional;
 
 @Service
 public class ActivityService {
-
-
 
     private final ActivityRepository activityRepository;
     private final SequenceResetter sequenceResetter;
@@ -97,6 +94,11 @@ public class ActivityService {
         }
     }
 
+    private static Activity getActivity(Activity activity, Optional<Activity> existingActivityOpt) {
+        if (!existingActivityOpt.isPresent()) {
+            throw new IllegalArgumentException("Activity not found");
+        }
+
     @Transactional
     public void updateEquipmentForActivity(Long activityId, List<Equipment> newEquipmentList) {
         Activity existingActivity = getActivityById(activityId).orElseThrow(() -> new IllegalArgumentException("Invalid activity id"));
@@ -115,6 +117,9 @@ public class ActivityService {
 
 
     // Delete activity by id
+    // ------------------- Delete -------------------
+
+    @Transactional
     public void deleteActivityById(Long id) {
         Optional<Activity> existingActivityOpt = activityRepository.findById(id);
         if (existingActivityOpt.isPresent()) {
