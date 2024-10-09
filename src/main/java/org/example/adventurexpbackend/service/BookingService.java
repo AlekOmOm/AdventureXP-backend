@@ -73,23 +73,30 @@ public class BookingService {
         Activity activity = activityService.getActivity(booking.getActivity());
 
         if (activity == null) {
-            System.out.println("DEBUG: BookingService.createBooking");
-            System.out.println(" Activity not found");
+            System.out.println("DEBUG: BookingService.createBooking - Activity not found");
             return false;
         }
 
+        // Check if the requested timeslot is available
         List<AvailableTimeSlot> availableTimeSlots = getAvailableTimes(activity, booking.getDate(), booking.getPersonsAmount());
 
-        // if booking time is within available time slots
         for (AvailableTimeSlot availableTimeSlot : availableTimeSlots) {
             if (booking.getStartTime().isAfter(availableTimeSlot.getStartTime()) && booking.getEndTime().isBefore(availableTimeSlot.getEndTime())) {
+
+                // Reserve the timeslot
                 booking.setActivity(activity);
+
+                // Save booking
                 bookingRepository.save(booking);
+
+                // Update the TimeSlot
+                updateTimeSlotAvailability(activity, booking.getStartTime(), booking.getEndTime());
+
                 return true;
             }
         }
 
-        return true;
+        return false; // No available timeslot
     }
 
     public Booking getBookingById(Long id) {
