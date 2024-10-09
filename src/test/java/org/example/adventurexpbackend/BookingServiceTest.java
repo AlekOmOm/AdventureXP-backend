@@ -1,7 +1,7 @@
 package org.example.adventurexpbackend;
 
 import org.example.adventurexpbackend.config.InitData;
-import org.example.adventurexpbackend.dto.AvailableTimeSlot;
+import org.example.adventurexpbackend.controller.dto.AvailableTimeSlot;
 import org.example.adventurexpbackend.model.Activity;
 import org.example.adventurexpbackend.model.Booking;
 import org.example.adventurexpbackend.repository.ActivityRepository;

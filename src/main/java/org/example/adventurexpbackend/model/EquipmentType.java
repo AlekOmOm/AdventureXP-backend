@@ -1,8 +1,10 @@
 package org.example.adventurexpbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
+@JsonIgnoreProperties({"activity"})
 public class EquipmentType {
 
     @Id

@@ -1,4 +1,4 @@
-package org.example.adventurexpbackend.dto;
+package org.example.adventurexpbackend.controller.dto;
 
 import java.time.LocalTime;
 

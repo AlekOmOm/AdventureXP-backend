@@ -12,31 +12,34 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.example.adventurexpbackend.dto.AvailableTimeSlot;
+import org.example.adventurexpbackend.controller.dto.AvailableTimeSlot;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class BookingService {
 
     private final BookingRepository bookingRepository;
     private final ActivityService activityService;
+    private final RestTemplate restTemplate;
+
     private final SequenceResetter sequenceResetter;
 
     @Autowired
-    public BookingService(BookingRepository bookingRepository, ActivityService activityService, SequenceResetter sequenceResetter) {
+    public BookingService(BookingRepository bookingRepository, ActivityService activityService, SequenceResetter sequenceResetter, RestTemplate restTemplate) {
         this.bookingRepository = bookingRepository;
         this.activityService = activityService;
         this.sequenceResetter = sequenceResetter;
+        this.restTemplate = restTemplate;
     }
 
     // ----------------- Operations ---------------------
 
     public Booking book(Booking booking) {
-        boolean isBookingCreated = createBooking(booking);
 
-        if (isBookingCreated) {
-            return booking;
-        } else {
-            return null; // return null if booking was denied
+        try {
+            return createBooking(booking);
+        } catch (Exception e) {
+            return null;
         }
     }
 
@@ -71,33 +74,26 @@ public class BookingService {
 
     // ----------------- CRUD Operations ---------------------
 
-    public boolean createBooking(Booking booking) {
+    private Booking createBooking(Booking booking) {
         Activity activity = activityService.getActivity(booking.getActivity());
 
+        // check if activity exists
         if (activity == null) {
             System.out.println("DEBUG: BookingService.createBooking");
             System.out.println(" Activity not found");
-            return false;
+            return null;
         }
 
-        List<AvailableTimeSlot> availableTimeSlots = getAvailableTimes(activity, booking.getDate(), booking.getPersonsAmount());
-
-        // if booking time is within available time slots
-        for (AvailableTimeSlot availableTimeSlot : availableTimeSlots) {
-            if (booking.getStartTime().isAfter(availableTimeSlot.getStartTime()) && booking.getEndTime().isBefore(availableTimeSlot.getEndTime())) {
-                booking.setActivity(activity);
-
-                List<Booking> repoList = getAllBookings();
-                if (!repoList.isEmpty()) {
-                    sequenceResetter.resetAutoIncrement("booking", repoList.getLast().getId() + 1);
-                }
-
-                bookingRepository.save(booking);
-                return true;
-            }
+        // check capacity
+        if (booking.getPersonsAmount() > activity.getPersonsMax()) {
+            return null;
         }
 
-        return true;
+        // db id reset
+        long startValue = getAllBookings().getLast().getId();
+        sequenceResetter.resetAutoIncrement("booking",startValue);
+
+        return bookingRepository.save(booking);
     }
 
     public Booking getBookingById(Long id) {
