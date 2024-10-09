@@ -59,12 +59,20 @@ public class ActivityService {
         return Optional.ofNullable(activity.getId() != null ? activityRepository.findById(activity.getId()).orElse(null) : activityRepository.findByName(activity.getName()));
     }
 
-    public List<Activity> getAllActivities() {
-        return new ArrayList<>(activityRepository.findAll());
+    public Optional<Activity> getActivity(Long id) {
+        Activity activity = new Activity();
+        activity.setId(id);
+        return getActivity(activity);
     }
 
-    public Optional<Activity> getActivityById(Long id) {
-        return activityRepository.findById(id);
+    public Optional<Activity> getActivity(String name) {
+        Activity activity = new Activity();
+        activity.setName(name);
+        return getActivity(activity);
+    }
+
+    public List<Activity> getAllActivities() {
+        return new ArrayList<>(activityRepository.findAll());
     }
 
     // ------------------- 3. Update -------------------
@@ -103,7 +111,7 @@ public class ActivityService {
 
     @Transactional
     public void updateEquipmentForActivity(Long activityId, List<Equipment> newEquipmentList) {
-        Activity existingActivity = getActivityById(activityId).orElseThrow(() -> new IllegalArgumentException("Invalid activity id"));
+        Activity existingActivity = getActivity(activityId).orElseThrow(() -> new IllegalArgumentException("Invalid activity id"));
         existingActivity.setEquipmentList(newEquipmentList);
         activityRepository.save(existingActivity);
     }
@@ -115,6 +123,20 @@ public class ActivityService {
         List<Booking> bookings = bookingRepository.findByActivity(activity);
         bookingRepository.deleteAll(bookings);
         activityRepository.delete(activity);
+    }
+
+    @Transactional
+    public void delete(long id) {
+        Activity activity = new Activity();
+        activity.setId(id);
+        delete(activity);
+    }
+
+    @Transactional
+    public void delete(String name) {
+        Activity activity = new Activity();
+        activity.setName(name);
+        delete(activity);
     }
 
 
@@ -129,6 +151,39 @@ public class ActivityService {
         }
     }
 
+    public Activity bookAndSave(Activity frontendActivity) {
+        // assumes that
+            // timeslots have been booked
+            // timeslot current participants have been updated
+
+        // 1 step - find timeslots booked
+            // get activity from repo to compare
+        Optional<Activity> repoActivity = getActivity(frontendActivity);
+        if (repoActivity.isEmpty()) {
+            return null;
+        }
+
+        if (frontendActivity.equals(repoActivity.get())) {
+            return null;
+        }
+
+        // 2 step - book the timeslots
+        List<TimeSlot> timeSlots = frontendActivity.getTimeSlots();
+        List<TimeSlot> repoTimeSlots = repoActivity.get().getTimeSlots();
+
+        for (TimeSlot timeSlot : timeSlots) {
+            for (TimeSlot repoTimeSlot : repoTimeSlots) {
+                if (timeSlot.equals(repoTimeSlot)) {
+                    repoTimeSlot.setCurrentParticipants(timeSlot.getCurrentParticipants());
+                }
+            }
+        }
+
+        repoActivity.get().setTimeSlots(repoTimeSlots);
+
+        // 3 step - save
+        return activityRepository.save(repoActivity.get());
+    }
 
 
     // ------------------- 5. Other -------------------

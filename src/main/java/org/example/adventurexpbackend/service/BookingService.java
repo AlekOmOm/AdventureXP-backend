@@ -1,7 +1,6 @@
 package org.example.adventurexpbackend.service;
 
 
-import org.example.adventurexpbackend.config.SequenceResetter;
 import org.example.adventurexpbackend.model.Activity;
 import org.example.adventurexpbackend.model.Booking;
 import org.example.adventurexpbackend.model.TimeSlot;
@@ -14,35 +13,37 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.example.adventurexpbackend.controller.dto.AvailableTimeSlot;
-import org.springframework.web.client.RestTemplate;
+import java.util.Optional;
 
 @Service
 public class BookingService {
 
     private final BookingRepository bookingRepository;
     private final ActivityService activityService;
-    private final RestTemplate restTemplate;
-    private final SequenceResetter sequenceResetter;
+
 
     @Autowired
-    public BookingService(BookingRepository bookingRepository, ActivityService activityService, SequenceResetter sequenceResetter, RestTemplate restTemplate) {
+    public BookingService(BookingRepository bookingRepository, ActivityService activityService) {
         this.bookingRepository = bookingRepository;
         this.activityService = activityService;
-        this.sequenceResetter = sequenceResetter;
-        this.restTemplate = restTemplate;
     }
 
     // ----------------- Operations ---------------------
 
+    @Transactional
     public Booking book(Booking booking) {
 
-        try {
-            return createBooking(booking);
-        } catch (Exception e) {
+        Activity activity = activityService.bookAndSave(booking.getActivity());
+
+        if (activity == null) {
             return null;
         }
+
+        booking.setActivity(activity);
+
+        return bookingRepository.save(booking);
     }
+
 
     public List<TimeSlot> getAvailableTimes(Activity activity, LocalDate date, int personsAmount) {
         // gets oru all timeslots for the activity
@@ -65,14 +66,13 @@ public class BookingService {
     // ----------------- CRUD Operations ---------------------
     @Transactional
     protected Booking createBooking(Booking booking) {
-        Activity activity = activityService.updateActivity(booking.getActivity());
+        Optional<Activity> activityOpt = activityService.getActivity(booking.getActivity());
 
-        // check if activity exists
-        if (activity == null) {
-            System.out.println("DEBUG: BookingService.createBooking");
-            System.out.println(" Activity not found");
+        if (activityOpt.isEmpty()) {
             return null;
         }
+        Activity activity = activityOpt.get();
+
 
         // Check if the requested timeslot is available
         List<TimeSlot> availableTimeSlots = getAvailableTimes(activity, booking.getDate(), booking.getPersonsAmount());
