@@ -29,17 +29,19 @@ public class SequenceResetter {
     }
 
 
-    public void resetSequences(long startValueActivity, long startValueEquipment, long startValueEquipmentType, long startValueBooking) {
+    public void resetSequences(long[] startValues) {
 
         resetAutoIncrement("activity");
         resetAutoIncrement("equipment");
         resetAutoIncrement("equipment_type");
         resetAutoIncrement("booking");
 
-        resetAutoIncrement("activity", startValueActivity);
-        resetAutoIncrement("equipment", startValueEquipment);
-        resetAutoIncrement("equipment_type", startValueEquipmentType);
-        resetAutoIncrement("booking", startValueBooking);
+        resetAutoIncrement("activity", startValues[0]);
+        resetAutoIncrement("equipment", startValues[1]);
+        resetAutoIncrement("equipment_type", startValues[2]);
+        resetAutoIncrement("time_slot", startValues[3]);
+        resetAutoIncrement("booking", startValues[4]);
+
     }
 
 

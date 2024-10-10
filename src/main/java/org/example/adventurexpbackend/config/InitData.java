@@ -4,10 +4,7 @@ import org.example.adventurexpbackend.model.Activity;
 import org.example.adventurexpbackend.model.Booking;
 import org.example.adventurexpbackend.model.Equipment;
 import org.example.adventurexpbackend.model.EquipmentType;
-import org.example.adventurexpbackend.repository.ActivityRepository;
-import org.example.adventurexpbackend.repository.BookingRepository;
-import org.example.adventurexpbackend.repository.EquipmentRepository;
-import org.example.adventurexpbackend.repository.EquipmentTypeRepository;
+import org.example.adventurexpbackend.repository.*;
 import org.example.adventurexpbackend.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -29,22 +26,24 @@ public class InitData implements CommandLineRunner {
     private final BookingRepository bookingRepository;
     private final SequenceResetter sequenceResetter;
     private final ActivityService activityService;
+    private final TimeSlotRepository timeSlotRepository;
 
     @Autowired
-    public InitData(ActivityRepository activityRepository, EquipmentRepository equipmentRepository, EquipmentTypeRepository equipmentTypeRepository, BookingRepository bookingRepository, SequenceResetter sequenceResetter, ActivityService activityService) {
+    public InitData(ActivityRepository activityRepository, EquipmentRepository equipmentRepository, EquipmentTypeRepository equipmentTypeRepository, BookingRepository bookingRepository, SequenceResetter sequenceResetter, ActivityService activityService, TimeSlotRepository timeSlotRepository) {
         this.activityRepository = activityRepository;
         this.equipmentRepository = equipmentRepository;
         this.equipmentTypeRepository = equipmentTypeRepository;
         this.bookingRepository = bookingRepository;
         this.sequenceResetter = sequenceResetter;
         this.activityService = activityService;
+        this.timeSlotRepository = timeSlotRepository;
     }
 
     @Override
     public void run(String... args) throws Exception {
         clearDB();
-        long[] startValues = getStartValues();
-        sequenceResetter.resetSequences(startValues[0], startValues[1], startValues[2], startValues[3]);
+
+        sequenceResetter.resetSequences(getStartValues());
 
         Set<EquipmentType> paintballEquipmentTypes = createPaintballEquipmentTypes();
         Set<EquipmentType> climbingEquipmentTypes = createClimbingEquipmentTypes();
@@ -70,6 +69,7 @@ public class InitData implements CommandLineRunner {
                 activityRepository.findAll().isEmpty() ? 1 : activityRepository.findAll().get(activityRepository.findAll().size()-1).getId() + 1,
                 equipmentRepository.findAll().isEmpty() ? 1 : equipmentRepository.findAll().get(equipmentRepository.findAll().size()-1).getId() + 1,
                 equipmentTypeRepository.findAll().isEmpty() ? 1 : equipmentTypeRepository.findAll().get(equipmentTypeRepository.findAll().size()-1).getId() + 1,
+                timeSlotRepository.findAll().isEmpty() ? 1 : timeSlotRepository.findAll().get(timeSlotRepository.findAll().size()-1).getId() + 1,
                 bookingRepository.findAll().isEmpty() ? 1 : bookingRepository.findAll().get(bookingRepository.findAll().size()-1).getId() + 1
         };
     }
