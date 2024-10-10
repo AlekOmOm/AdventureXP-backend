@@ -75,12 +75,11 @@ public class InitData implements CommandLineRunner {
     }
 
     private Set<EquipmentType> createPaintballEquipmentTypes() {
-        Set<EquipmentType> equipmentTypes = new HashSet<>(List.of(
+        return new HashSet<>(List.of(
                 new EquipmentType("Paintball gun"),
                 new EquipmentType("Paintball mask"),
                 new EquipmentType("Paintball suit")
         ));
-        return new HashSet<>((equipmentTypes));
     }
 
     private Set<EquipmentType> createClimbingEquipmentTypes() {
@@ -93,35 +92,31 @@ public class InitData implements CommandLineRunner {
     }
 
     private Set<EquipmentType> createGoKartEquipmentTypes() {
-        Set<EquipmentType> equipmentTypes = new HashSet<>(List.of(
+        return new HashSet<>((new HashSet<>(List.of(
                 new EquipmentType("Go-kart car"),
                 new EquipmentType("Go-kart helmet"),
                 new EquipmentType("Go-kart suit"),
                 new EquipmentType("Go-kart gloves")
-        ));
-        return new HashSet<>((equipmentTypes));
+        ))));
     }
 
     private List<Equipment> createPaintballEquipment() {
-        List<Equipment> equipmentList = new ArrayList<>(List.of(
+        return new ArrayList<>(List.of(
                 new Equipment("Paintball gun", true, false),
                 new Equipment("Paintball mask", true, false),
                 new Equipment("Paintball suit", true, false)
         ));
-        return equipmentList;
     }
 
     private List<Equipment> createClimbingEquipment() {
-        List<Equipment> equipmentList = new ArrayList<>(List.of(
+        return new ArrayList<>(List.of(
                 new Equipment("Climbing shoes", true, false),
                 new Equipment("Climbing harness", true, false),
                 new Equipment("Climbing chalk", true, false)
         ));
-        return equipmentList;
     }
 
     private List<Equipment> createGoKartEquipment() {
-
         return new ArrayList<>(List.of(
                 new Equipment("Go-kart car", true, false),
                 new Equipment("Go-kart helmet", true, false),
@@ -132,9 +127,9 @@ public class InitData implements CommandLineRunner {
 
     private List<Activity> createActivities(List<Equipment> paintballEquipmentList, List<Equipment> climbingEquipmentList, List<Equipment> goKartEquipmentList, Set<EquipmentType> paintballEquipmentTypes, Set<EquipmentType> climbingEquipmentTypes, Set<EquipmentType> goKartEquipmentTypes) {
         List<Activity> activities = new ArrayList<>(List.of(
-                new Activity("Paintball", "Paintball is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, paintballEquipmentList, paintballEquipmentTypes),
-                new Activity("Climbing", "Climbing is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, climbingEquipmentList, climbingEquipmentTypes),
-                new Activity("Go-kart", "Go-kart is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, goKartEquipmentList, goKartEquipmentTypes)
+                new Activity("Paintball", "Paintball is a fun activity for everyone", 100, 120, 10, 100, 60, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, paintballEquipmentList, paintballEquipmentTypes),
+                new Activity("Climbing", "Climbing is a fun activity for everyone", 100, 120, 10, 100, 60, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, climbingEquipmentList, climbingEquipmentTypes),
+                new Activity("Go-kart", "Go-kart is a fun activity for everyone", 100, 120, 10, 100, 60, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, goKartEquipmentList, goKartEquipmentTypes)
         ));
         return activityService.saveAllActivities(activities);
     }

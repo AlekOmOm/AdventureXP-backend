@@ -58,37 +58,10 @@ public class Activity {
         this.timeSlotInterval = timeSlotInterval;
         this.equipmentList = equipmentList;
         this.equipmentTypes = equipmentRequiredPerPerson;
-        this.timeSlots = generateTimeSlots();
+        this.timeSlots = initTimeSlots();
     }
 
-    private List<TimeSlot> generateTimeSlots() {
-        List<TimeSlot> timeSlots = new ArrayList<>();
-        int interval = timeSlotInterval;
 
-        // MAking the slots
-        LocalTime currentTime = openingTime;
-        while (currentTime.isBefore(closingTime)) {
-            LocalTime endTime = currentTime.plusMinutes(interval);
-            if (endTime.isAfter(closingTime)) {
-                endTime = closingTime;
-            }
-
-            TimeSlot timeSlot = new TimeSlot();
-            timeSlot.setStartTime(currentTime);
-            timeSlot.setEndTime(endTime);
-
-
-            timeSlot.setMaxParticipants(personsMax);
-            timeSlot.setCurrentParticipants(0);
-            timeSlot.setAvailable(true);
-
-            timeSlots.add(timeSlot);
-
-            currentTime = endTime;
-        }
-
-        return timeSlots;
-    }
 
     // --------------- Get and Set methods ----------------
     public Long getId() {
@@ -211,6 +184,53 @@ public class Activity {
         this.timeSlots = timeSlots;
     }
 
+    // --------------- helper ----------------
+
+    private List<TimeSlot> initTimeSlots() {
+        List<TimeSlot> timeSlots = new ArrayList<>();
+        int interval = timeSlotInterval;
+
+        // Making the slots
+
+        while (openingTime.isBefore(closingTime)) {
+            LocalTime endTime = openingTime.plusMinutes(interval);
+            if (endTime.isAfter(closingTime)) {
+                endTime = closingTime;
+            }
+
+            TimeSlot timeSlot = new TimeSlot();
+            timeSlot.setStartTime(openingTime);
+            timeSlot.setEndTime(endTime);
+
+
+            timeSlot.setMaxParticipants(personsMax);
+            timeSlot.setCurrentParticipants(0);
+            timeSlot.setAvailable(true);
+
+            timeSlots.add(timeSlot);
+
+            openingTime = endTime;
+        }
+
+        return timeSlots;
+    }
+
+    public void updateFrom(Activity other) {
+        this.setName(other.getName());
+        this.setDescription(other.getDescription());
+        this.setPricePrPerson(other.getPricePrPerson());
+        this.setTimeMaxLimit(other.getTimeMaxLimit());
+        this.setAgeMin(other.getAgeMin());
+        this.setAgeMax(other.getAgeMax());
+        this.setPersonsMin(other.getPersonsMin());
+        this.setPersonsMax(other.getPersonsMax());
+        this.setOpeningTime(other.getOpeningTime());
+        this.setClosingTime(other.getClosingTime());
+        this.setTimeSlotInterval(other.getTimeSlotInterval());
+        this.setEquipmentList(other.getEquipmentList());
+        this.setEquipmentTypes(other.getEquipmentTypes());
+    }
+
     @Override
     public String toString() {
         return "Activity{" +
@@ -231,4 +251,5 @@ public class Activity {
                 ", timeSlots=" + timeSlots +
                 '}';
     }
+
 }

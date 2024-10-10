@@ -28,17 +28,21 @@ public class BookingRESTController {
 
     //ResponseEntities need to be changed at somepoint to display custom messages, or be deleted if they are not needed
 
+    // ------------------- Operations -------------------
+
+    // ------------------- 1. Create -------------------
     @PostMapping
-    public ResponseEntity<String> createBooking(@RequestBody Booking booking) {
+    public ResponseEntity<String> createBooking(@RequestBody Booking booking, @RequestBody Activity activity) {
         System.out.println("Received booking request:" + booking);
 
         if (bookingService.book(booking) != null) {
-            return ResponseEntity.status(HttpStatus.CREATED).body("Booking successful");//custom message for a successful booking
+            return ResponseEntity.status(HttpStatus.CREATED).body("Booking successful");
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Booking denied: Max participants limit reached");// custom message for a denied
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Booking denied: Max participants limit reached");
         }
     }
 
+    // ------------------- 2. Read -------------------
     @GetMapping
     public ResponseEntity<List<Booking>> getAllBookings() {
         List<Booking> bookings = bookingService.getAllBookings();
@@ -47,19 +51,16 @@ public class BookingRESTController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Booking> getBookingById(@PathVariable Long id) {
-        Optional<Booking> booking = Optional.ofNullable(bookingService.getBookingById(id));
-        return booking.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return getBooking(bookingService.getBookingById(id));
     }
 
+    // ------------------- 3. Update -------------------
     @PutMapping("/{id}")
     public ResponseEntity<Booking> updateBooking(@PathVariable Long id, @RequestBody Booking updatedBooking) {
-        Booking booking = bookingService.updateBooking(updatedBooking);
-        if (booking == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(booking);
+        return getBooking(bookingService.updateBooking(updatedBooking));
     }
 
+    // ------------------- 4. Delete -------------------
     @DeleteMapping("/{id}")
     public ResponseEntity<Booking> deleteBooking(@PathVariable Long id) {
         bookingService.deleteBooking(id);
@@ -67,29 +68,29 @@ public class BookingRESTController {
     }
 
 
-    //-------------------------------------------------------------------------------------
-    // Endpoint to get all available timeslots for a specific activity and deto
-
+    // ------------------- TimeSlot Operations -------------------
+    // Endpoint to get all available timeslots for a specific activity and dto
     @GetMapping("/available-timeslots")
-    public ResponseEntity<List<TimeSlot>> getAvailableTimeSlots(@RequestParam Long activityId, @RequestParam String date, @RequestParam int personsAmount) {
+    public ResponseEntity<List<TimeSlot>> getAvailableTimeSlots(
+            @RequestParam Long activityId,
+            @RequestParam String date,
+            @RequestParam int personsAmount) {
 
-        Optional<Activity> activityOptional = activityService.getActivityById(activityId);  // No need for Optional.ofNullable()
+        Optional<Activity> activityOptional = activityService.getActivity(activityId);
         if (activityOptional.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
+        Activity activity = activityOptional.get();
+
         LocalDate bookingDate;
         try {
-            bookingDate = LocalDate.parse(date);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        List<TimeSlot> availableTimeSlots = bookingService.getAvailableTimes(activityOptional.get(), bookingDate, personsAmount);
-
-        return availableTimeSlots.isEmpty()
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.ok(availableTimeSlots);
+            bookingDate = LocalDate.parse(date);}
+        catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);}
+        List<TimeSlot> availableTimeSlots = bookingService.getAvailableTimes(activity, bookingDate, personsAmount);
+        if (!availableTimeSlots.isEmpty()) {return new ResponseEntity<>(availableTimeSlots, HttpStatus.OK);
+        } else {return new ResponseEntity<>(HttpStatus.NO_CONTENT);}
     }
 
     //----------------------------------------------------------------------------------------------------------------------
@@ -97,10 +98,12 @@ public class BookingRESTController {
     @PostMapping("/book-timeslot")
     public ResponseEntity<String> bookTimeSlot(@RequestParam Long activityId, @RequestParam Long timeSlotId, @RequestParam String participantName, @RequestParam int personsAmount) {
 
-        Optional<Activity> activityOptional = activityService.getActivityById(activityId);  // No need for Optional.ofNullable()
+
+        Optional<Activity> activityOptional = activityService.getActivity(activityId);
         if (activityOptional.isEmpty()) {
-            return new ResponseEntity<>("Activity not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Activity not found bruh", HttpStatus.NOT_FOUND);
         }
+
 
         Activity activity = activityOptional.get();
         Optional<TimeSlot> timeSlotOptional = activity.getTimeSlots().stream()
@@ -108,12 +111,14 @@ public class BookingRESTController {
                 .findFirst();
 
         if (timeSlotOptional.isEmpty()) {
-            return new ResponseEntity<>("Timeslot not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Timeslot is sadly not found", HttpStatus.NOT_FOUND);
         }
 
         TimeSlot timeSlot = timeSlotOptional.get();
+
+        // Checkings if the timeslot is available
         if (!timeSlot.isAvailable()) {
-            return new ResponseEntity<>("Timeslot is already booked", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Timeslot is already in use (too bad) ", HttpStatus.BAD_REQUEST);
         }
 
         Booking booking = new Booking();
@@ -124,16 +129,28 @@ public class BookingRESTController {
         booking.setPersonsAmount(personsAmount);
         booking.setParticipantName(participantName);
 
-        Booking createdBooking = bookingService.createBooking(booking);
+        Booking bookingCreated = bookingService.book(booking);
 
-        if (createdBooking == null) {
-            return new ResponseEntity<>("Booking failed", HttpStatus.INTERNAL_SERVER_ERROR);
+        if (bookingCreated == null) {
+            return new ResponseEntity<>("Fail", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
         timeSlot.setAvailable(false);
         activityService.saveActivity(activity);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Timeslot booked successfully");
+        return ResponseEntity.status(HttpStatus.CREATED).body("woop woop Timeslot booked successfully woop woop");
+    }
+
+
+    // ------------------- Helper -------------------
+
+    private ResponseEntity<Booking> getBooking(Booking booking) {
+        return Optional.ofNullable(booking)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    private boolean isBookingSuccessful(Booking booking) {
+        return bookingService.book(booking) != null;
     }
 }
 

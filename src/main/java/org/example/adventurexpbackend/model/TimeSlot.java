@@ -88,6 +88,11 @@ public class TimeSlot {
         this.available = this.currentParticipants < this.maxParticipants;
     }
 
+    public void addParticipants(int participants) {
+        this.currentParticipants += participants;
+        this.available = this.currentParticipants < this.maxParticipants;
+    }
+
     public boolean isAvailable() {
         return available;
     }
