@@ -30,21 +30,6 @@ public class BookingService {
 
     // ----------------- Operations ---------------------
 
-    @Transactional
-    public Booking book(Booking booking) {
-
-        Activity activity = activityService.bookAndSave(booking.getActivity());
-
-        if (activity == null) {
-            return null;
-        }
-
-        booking.setActivity(activity);
-
-        return bookingRepository.save(booking);
-    }
-
-
     public List<TimeSlot> getAvailableTimes(Activity activity, LocalDate date, int personsAmount) {
         // gets oru all timeslots for the activity
         List<TimeSlot> availableTimeSlots = new ArrayList<>(activity.getTimeSlots());
@@ -65,7 +50,7 @@ public class BookingService {
 
     // ----------------- CRUD Operations ---------------------
     @Transactional
-    protected Booking createBooking(Booking booking) {
+    public Booking createBooking(Booking booking) {
         Optional<Activity> activityOpt = activityService.getActivity(booking.getActivity());
 
         if (activityOpt.isEmpty()) {
@@ -73,8 +58,6 @@ public class BookingService {
         }
         Activity activity = activityOpt.get();
 
-
-        // Check if the requested timeslot is available
         List<TimeSlot> availableTimeSlots = getAvailableTimes(activity, booking.getDate(), booking.getPersonsAmount());
 
         for (TimeSlot availableTimeSlot : availableTimeSlots) {

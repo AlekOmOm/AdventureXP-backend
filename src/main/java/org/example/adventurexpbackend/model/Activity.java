@@ -184,6 +184,17 @@ public class Activity {
         this.timeSlots = timeSlots;
     }
 
+    public void updateTimeSlot(TimeSlot timeSlot) {
+        for (TimeSlot slot : this.timeSlots) {
+            if (slot.getDate().equals(timeSlot.getDate()) &&
+                    slot.getStartTime().equals(timeSlot.getStartTime()) &&
+                    slot.getEndTime().equals(timeSlot.getEndTime())) {
+                slot.updateFrom(timeSlot);
+                break;
+            }
+        }
+    }
+
     // --------------- helper ----------------
 
     private List<TimeSlot> initTimeSlots() {

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -35,7 +36,9 @@ public class BookingRESTController {
     public ResponseEntity<String> createBooking(@RequestBody Booking booking, @RequestBody Activity activity) {
         System.out.println("Received booking request:" + booking);
 
-        if (bookingService.book(booking) != null) {
+        Booking bookingCreated = bookingService.createBooking(booking);
+
+        if (bookingCreated != null) {
             return ResponseEntity.status(HttpStatus.CREATED).body("Booking successful");
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Booking denied: Max participants limit reached");
@@ -76,21 +79,11 @@ public class BookingRESTController {
             @RequestParam String date,
             @RequestParam int personsAmount) {
 
-        Optional<Activity> activityOptional = activityService.getActivity(activityId);
-        if (activityOptional.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        LocalDate bookingDate = parseDate(date);
 
-        Activity activity = activityOptional.get();
-
-        LocalDate bookingDate;
-        try {
-            bookingDate = LocalDate.parse(date);}
-        catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);}
         List<TimeSlot> availableTimeSlots = bookingService.getAvailableTimes(activity, bookingDate, personsAmount);
-        if (!availableTimeSlots.isEmpty()) {return new ResponseEntity<>(availableTimeSlots, HttpStatus.OK);
-        } else {return new ResponseEntity<>(HttpStatus.NO_CONTENT);}
+
+        return createResponseEntity(availableTimeSlots);
     }
 
     //----------------------------------------------------------------------------------------------------------------------
@@ -104,37 +97,31 @@ public class BookingRESTController {
             return new ResponseEntity<>("Activity not found bruh", HttpStatus.NOT_FOUND);
         }
 
-
-        Activity activity = activityOptional.get();
-        Optional<TimeSlot> timeSlotOptional = activity.getTimeSlots().stream()
+        Optional<TimeSlot> timeSlot = activityOptional.get().getTimeSlots().stream()
                 .filter(ts -> ts.getId().equals(timeSlotId))
                 .findFirst();
 
-        if (timeSlotOptional.isEmpty()) {
-            return new ResponseEntity<>("Timeslot is sadly not found", HttpStatus.NOT_FOUND);
+        if (timeSlot.isEmpty()) {
+            return new ResponseEntity<>("Timeslot not found bruh", HttpStatus.NOT_FOUND);
         }
 
-        TimeSlot timeSlot = timeSlotOptional.get();
+        timeSlot.get().addParticipants(personsAmount);
 
-        // Checkings if the timeslot is available
-        if (!timeSlot.isAvailable()) {
-            return new ResponseEntity<>("Timeslot is already in use (too bad) ", HttpStatus.BAD_REQUEST);
-        }
+        activityOptional.get().updateTimeSlot(timeSlot.get());
 
-        Booking booking = new Booking();
-        booking.setActivity(activity);
-        booking.setDate(timeSlot.getDate());
-        booking.setStartTime(timeSlot.getStartTime());
-        booking.setEndTime(timeSlot.getEndTime());
-        booking.setPersonsAmount(personsAmount);
-        booking.setParticipantName(participantName);
 
-        Booking bookingCreated = bookingService.book(booking);
+
+
+
+        Booking bookingCreated = bookingService.createBooking(booking);
 
         if (bookingCreated == null) {
             return new ResponseEntity<>("Fail", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        timeSlot.setAvailable(false);
+
+        timeSlot.get().addParticipants(personsAmount);
+        activity.getTimeSlots().remove(timeSlot);
+
         activityService.saveActivity(activity);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("woop woop Timeslot booked successfully woop woop");
@@ -150,7 +137,36 @@ public class BookingRESTController {
     }
 
     private boolean isBookingSuccessful(Booking booking) {
-        return bookingService.book(booking) != null;
+        return bookingService.createBooking(booking) != null;
+    }
+
+
+    private Optional<TimeSlot> getTimeSlotById(Activity activity, Long timeSlotId) {
+        return activity.getTimeSlots().stream()
+                .filter(ts -> ts.getId().equals(timeSlotId))
+                .findFirst();
+    }
+
+    private void validateOptional(Optional<?> optional, String entityName) {
+        if (optional.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, entityName + " not found");
+        }
+    }
+
+    private LocalDate parseDate(String date) {
+        LocalDate result;
+        try {
+            result = LocalDate.parse(date);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date format", e);
+        }
+        return result;
+    }
+
+    private <T> ResponseEntity<List<T>> createResponseEntity(List<T> data) {
+        return data.isEmpty()
+                ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(data, HttpStatus.OK);
     }
 }
 

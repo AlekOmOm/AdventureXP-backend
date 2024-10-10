@@ -101,6 +101,7 @@ public class TimeSlot {
         this.available = available;
     }
 
+    // ----------------- Helper ---------------------
     @Override
     public String toString() {
         return "TimeSlot{" +
@@ -112,5 +113,13 @@ public class TimeSlot {
                 ", currentParticipants=" + currentParticipants +
                 ", available=" + available +
                 '}';
+    }
+
+    public void updateFrom(TimeSlot timeSlot) {
+        this.date = timeSlot.getDate();
+        this.startTime = timeSlot.getStartTime();
+        this.endTime = timeSlot.getEndTime();
+        this.maxParticipants = timeSlot.getMaxParticipants();
+        setCurrentParticipants(timeSlot.getCurrentParticipants());
     }
 }
