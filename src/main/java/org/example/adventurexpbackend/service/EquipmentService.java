@@ -26,7 +26,9 @@ public class EquipmentService {
     // Method to mark equipment as functionall
     public String markAsFunctional(Long equipmentId) {
         Optional<Equipment> optionalEquipment = equipmentRepository.findById(equipmentId);
-        // CRUD operations
+
+
+    // ----------------- Operations ---------------------
 
         if (optionalEquipment.isPresent()) {
             Equipment equipment = optionalEquipment.get();
@@ -47,7 +49,14 @@ public class EquipmentService {
         return equipmentRepository.findAll();
     }
 
-    // Retrieve equipment by id
+    public Equipment get(Equipment equipment) {
+        if(equipment.getId() != null) {
+            return equipmentRepository.findById(equipment.getId()).orElse(null);
+        } else {
+            return equipmentRepository.findByName(equipment.getName());
+        }
+    }
+
     public Optional<Equipment> getEquipmentById(Long id) {
         return equipmentRepository.findById(id);
     }

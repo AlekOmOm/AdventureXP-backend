@@ -1,5 +1,6 @@
 package org.example.adventurexpbackend.config;
 
+import com.zaxxer.hikari.util.FastList;
 import org.example.adventurexpbackend.model.Activity;
 import org.example.adventurexpbackend.model.Booking;
 import org.example.adventurexpbackend.model.Equipment;
@@ -9,9 +10,12 @@ import org.example.adventurexpbackend.repository.BookingRepository;
 import org.example.adventurexpbackend.repository.EquipmentRepository;
 import org.example.adventurexpbackend.repository.EquipmentTypeRepository;
 import org.example.adventurexpbackend.service.ActivityService;
+import org.example.adventurexpbackend.service.EquipmentService;
+import org.example.adventurexpbackend.service.EquipmentTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -29,34 +33,31 @@ public class InitData implements CommandLineRunner {
     private final BookingRepository bookingRepository;
     private final SequenceResetter sequenceResetter;
     private final ActivityService activityService;
+    private final EquipmentService equipmentService;
+    private final EquipmentTypeService equipmentTypeService;
 
     @Autowired
-    public InitData(ActivityRepository activityRepository, EquipmentRepository equipmentRepository, EquipmentTypeRepository equipmentTypeRepository, BookingRepository bookingRepository, SequenceResetter sequenceResetter, ActivityService activityService) {
+    public InitData(ActivityRepository activityRepository, EquipmentRepository equipmentRepository, EquipmentTypeRepository equipmentTypeRepository, BookingRepository bookingRepository, SequenceResetter sequenceResetter, ActivityService activityService, EquipmentService equipmentService, EquipmentTypeService equipmentTypeService) {
         this.activityRepository = activityRepository;
         this.equipmentRepository = equipmentRepository;
         this.equipmentTypeRepository = equipmentTypeRepository;
         this.bookingRepository = bookingRepository;
         this.sequenceResetter = sequenceResetter;
         this.activityService = activityService;
+        this.equipmentService = equipmentService;
+        this.equipmentTypeService = equipmentTypeService;
     }
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
         clearDB();
         long[] startValues = getStartValues();
         sequenceResetter.resetSequences(startValues[0], startValues[1], startValues[2], startValues[3]);
 
-        Set<EquipmentType> paintballEquipmentTypes = createPaintballEquipmentTypes();
-        Set<EquipmentType> climbingEquipmentTypes = createClimbingEquipmentTypes();
-        Set<EquipmentType> goKartEquipmentTypes = createGoKartEquipmentTypes();
-
-        List<Equipment> paintballEquipmentList = createPaintballEquipment();
-        List<Equipment> climbingEquipmentList = createClimbingEquipment();
-        List<Equipment> goKartEquipmentList = createGoKartEquipment();
-
-        List<Activity> activities = createActivities(paintballEquipmentList, climbingEquipmentList, goKartEquipmentList, paintballEquipmentTypes, climbingEquipmentTypes, goKartEquipmentTypes);
-        createBookings(activities);
+        createBookings(createActivities());
     }
+
 
     private void clearDB() {
         bookingRepository.deleteAll();
@@ -64,6 +65,7 @@ public class InitData implements CommandLineRunner {
         equipmentRepository.deleteAll();
         equipmentTypeRepository.deleteAll();
     }
+
 
     private long[] getStartValues() {
         return new long[]{
@@ -75,49 +77,47 @@ public class InitData implements CommandLineRunner {
     }
 
     private Set<EquipmentType> createPaintballEquipmentTypes() {
-        Set<EquipmentType> equipmentTypes = new HashSet<>(List.of(
+
+        return new HashSet<>((new HashSet<>(List.of(
                 new EquipmentType("Paintball gun"),
                 new EquipmentType("Paintball mask"),
                 new EquipmentType("Paintball suit")
-        ));
-        return new HashSet<>((equipmentTypes));
+        ))));
     }
 
     private Set<EquipmentType> createClimbingEquipmentTypes() {
-        Set<EquipmentType> equipmentTypes = new HashSet<>(List.of(
+
+        return new HashSet<>((new HashSet<>(List.of(
                 new EquipmentType("Climbing shoes"),
                 new EquipmentType("Climbing harness"),
                 new EquipmentType("Climbing chalk")
-        ));
-        return new HashSet<>((equipmentTypes));
+        ))));
     }
 
     private Set<EquipmentType> createGoKartEquipmentTypes() {
-        Set<EquipmentType> equipmentTypes = new HashSet<>(List.of(
+
+        return new HashSet<>((new HashSet<>(List.of(
                 new EquipmentType("Go-kart car"),
                 new EquipmentType("Go-kart helmet"),
                 new EquipmentType("Go-kart suit"),
                 new EquipmentType("Go-kart gloves")
-        ));
-        return new HashSet<>((equipmentTypes));
+        ))));
     }
 
     private List<Equipment> createPaintballEquipment() {
-        List<Equipment> equipmentList = new ArrayList<>(List.of(
+        return new ArrayList<>(List.of(
                 new Equipment("Paintball gun", true, false),
                 new Equipment("Paintball mask", true, false),
                 new Equipment("Paintball suit", true, false)
         ));
-        return equipmentList;
     }
 
     private List<Equipment> createClimbingEquipment() {
-        List<Equipment> equipmentList = new ArrayList<>(List.of(
+        return new ArrayList<>(List.of(
                 new Equipment("Climbing shoes", true, false),
                 new Equipment("Climbing harness", true, false),
                 new Equipment("Climbing chalk", true, false)
         ));
-        return equipmentList;
     }
 
     private List<Equipment> createGoKartEquipment() {
@@ -130,7 +130,15 @@ public class InitData implements CommandLineRunner {
         ));
     }
 
-    private List<Activity> createActivities(List<Equipment> paintballEquipmentList, List<Equipment> climbingEquipmentList, List<Equipment> goKartEquipmentList, Set<EquipmentType> paintballEquipmentTypes, Set<EquipmentType> climbingEquipmentTypes, Set<EquipmentType> goKartEquipmentTypes) {
+    private List<Activity> createActivities() {
+        Set<EquipmentType> paintballEquipmentTypes = createPaintballEquipmentTypes();
+        Set<EquipmentType> climbingEquipmentTypes = createClimbingEquipmentTypes();
+        Set<EquipmentType> goKartEquipmentTypes = createGoKartEquipmentTypes();
+
+        List<Equipment> paintballEquipmentList = createPaintballEquipment();
+        List<Equipment> climbingEquipmentList = createClimbingEquipment();
+        List<Equipment> goKartEquipmentList = createGoKartEquipment();
+
         List<Activity> activities = new ArrayList<>(List.of(
                 new Activity("Paintball", "Paintball is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, paintballEquipmentList, paintballEquipmentTypes),
                 new Activity("Climbing", "Climbing is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, climbingEquipmentList, climbingEquipmentTypes),
@@ -153,4 +161,56 @@ public class InitData implements CommandLineRunner {
         ));
         bookingRepository.saveAll(bookings);
     }
+
+
+    // ---- Debugging method to delete an activity ---
+    @Transactional
+    public void deleteActivity() {
+        List<Activity> activities = activityRepository.findAll();
+        if (!activities.isEmpty()) {
+            Activity activity = activities.get(0);
+            System.out.println("Debug deleteActivity");
+            System.out.println(" Activity: " + activity);
+            Long activityId = activity.getId();
+            List<Equipment> equipments = activity.getEquipmentList();
+            Set<EquipmentType> equipmentTypes = activity.getEquipmentTypes();
+
+            System.out.println(" Equipments: " + equipments);
+            System.out.println(" EquipmentTypes: " + equipmentTypes);
+
+            // Use activityService to delete the activity
+            activityService.delete(activity);
+
+            // check if activity is deleted
+            Activity deletedActivity = activityRepository.findById(activityId).orElse(null);
+
+            // check if equipment is deleted
+            List<Equipment> deletedEquipments = findEquipmentList(equipments);
+
+            // check if equipmentType is deleted
+            Set<EquipmentType> deletedEquipmentTypes = findEquipmentTypeSet(equipmentTypes);
+
+            System.out.println("Debug deleteActivity");
+            System.out.println(" Deleted activity: " + deletedActivity);
+            System.out.println(" Deleted equipments: " + deletedEquipments);
+            System.out.println(" Deleted equipmentTypes: " + deletedEquipmentTypes);
+        }
+    }
+
+    private List<Equipment> findEquipmentList(List<Equipment> equipments) {
+        List<Equipment> foundEquipment = new ArrayList<>();
+        for (Equipment equipment : equipments) {
+            foundEquipment.add(equipmentService.get(equipment));
+        }
+        return foundEquipment;
+    }
+
+    private Set<EquipmentType> findEquipmentTypeSet(Set<EquipmentType> equipmentTypes) {
+        Set<EquipmentType> foundEquipmentTypes = new HashSet<>();
+        for (EquipmentType equipmentType : equipmentTypes) {
+            foundEquipmentTypes.add(equipmentTypeService.get(equipmentType));
+        }
+        return foundEquipmentTypes;
+    }
+
 }
