@@ -27,7 +27,9 @@ public class ActivityService {
         this.bookingRepository = bookingRepository;
     }
 
-    // ------------------- Create -------------------
+    // ------------------- Operations -------------------
+
+    // ------------------- 1. Create -------------------
     @Transactional
     public Activity saveActivity(Activity activity) {
         System.out.println("Debug: ActivityService: saveActivity");
@@ -51,33 +53,7 @@ public class ActivityService {
         return savedActivities;
     }
 
-    @Transactional
-    public void updateEquipmentList(Long activityId, List<Equipment> newEquipmentList) {
-        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new IllegalArgumentException("Invalid activity id"));
-        activity.getEquipmentList().clear();
-        activity.getEquipmentList().addAll(newEquipmentList);
-        activityRepository.save(activity);
-    }
-
-    @Transactional
-    public void delete(Activity activity) {
-        List<Booking> bookings = bookingRepository.findByActivity(activity);
-        bookingRepository.deleteAll(bookings);
-
-        // Verify that all bookings have been deleted
-        List<Booking> bookingsDeleted = bookingRepository.findByActivity(activity);
-
-        // If any bookings remain, throw an exception
-        if (!bookingsDeleted.isEmpty()) {
-            throw new IllegalArgumentException("Activity has bookings");
-        }
-
-        // Delete the activity
-        activityRepository.delete(activity);
-    }
-
-
-    // ------------------- Read -------------------
+    // ------------------- 2. Read -------------------
 
     public Activity getActivity(Activity activity) {
 
@@ -98,7 +74,7 @@ public class ActivityService {
 
     }
 
-    // Retrieve activity by id
+
     public Optional<Activity> getActivityById(Long id) {
         System.out.println("Debug: ActivityService: getActivityById: id: " + id);
         Optional<Activity> activity =  activityRepository.findById(id);
@@ -106,7 +82,7 @@ public class ActivityService {
         return activity;
     }
 
-    // Retrieve activity by name
+
     public Optional<Activity> getActivityByName(String name) {
         return Optional.ofNullable(activityRepository.findByName(name));
     }
@@ -120,25 +96,6 @@ public class ActivityService {
             System.out.println( " " + activity);
         }
         return activities;
-    }
-
-    // ------------------- Update -------------------
-        // if exists update, if not create
-
-    @Transactional
-    public Activity updateActivity(Activity activity) {
-        Optional<Activity> existingActivityOpt = getActivityById(activity.getId());
-        if (existingActivityOpt.isPresent()) {
-            Activity existingActivity = getActivity(activity, existingActivityOpt);
-            existingActivity.getEquipmentList().clear();
-            existingActivity.getEquipmentList().addAll(activity.getEquipmentList());
-            existingActivity.getEquipmentTypes().clear();
-            existingActivity.getEquipmentTypes().addAll(activity.getEquipmentTypes());
-            multiplyEquipmentTypes(existingActivity);
-            return activityRepository.save(existingActivity);
-        } else {
-            throw new IllegalArgumentException("Activity not found");
-        }
     }
 
 
@@ -164,6 +121,51 @@ public class ActivityService {
 
         return existingActivity;
     }
+
+    // ------------------- 3. Update -------------------
+    @Transactional
+    public Activity updateActivity(Activity activity) {
+        Optional<Activity> existingActivityOpt = getActivityById(activity.getId());
+        if (existingActivityOpt.isPresent()) {
+            Activity existingActivity = getActivity(activity, existingActivityOpt);
+            existingActivity.getEquipmentList().clear();
+            existingActivity.getEquipmentList().addAll(activity.getEquipmentList());
+            existingActivity.getEquipmentTypes().clear();
+            existingActivity.getEquipmentTypes().addAll(activity.getEquipmentTypes());
+            multiplyEquipmentTypes(existingActivity);
+            return activityRepository.save(existingActivity);
+        } else {
+            throw new IllegalArgumentException("Activity not found");
+        }
+    }
+
+    @Transactional
+    public void updateEquipmentList(Long activityId, List<Equipment> newEquipmentList) {
+        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new IllegalArgumentException("Invalid activity id"));
+        activity.getEquipmentList().clear();
+        activity.getEquipmentList().addAll(newEquipmentList);
+        activityRepository.save(activity);
+    }
+
+    // ------------------- 4. Delete -------------------
+    @Transactional
+    public void delete(Activity activity) {
+        List<Booking> bookings = bookingRepository.findByActivity(activity);
+        bookingRepository.deleteAll(bookings);
+
+        // Verify that all bookings have been deleted
+        List<Booking> bookingsDeleted = bookingRepository.findByActivity(activity);
+
+        // If any bookings remain, throw an exception
+        if (!bookingsDeleted.isEmpty()) {
+            throw new IllegalArgumentException("Activity has bookings");
+        }
+
+        // Delete the activity
+        activityRepository.delete(activity);
+    }
+
+
 
 
     // ------------------- Delete -------------------
