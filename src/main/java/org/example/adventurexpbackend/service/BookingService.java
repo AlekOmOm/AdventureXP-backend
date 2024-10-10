@@ -31,10 +31,8 @@ public class BookingService {
     // ----------------- Operations ---------------------
 
     public List<TimeSlot> getAvailableTimes(Activity activity, LocalDate date, int personsAmount) {
-        // gets oru all timeslots for the activity
         List<TimeSlot> availableTimeSlots = new ArrayList<>(activity.getTimeSlots());
 
-        // Fetch and filter so only available slot is returned
         List<Booking> bookingsAtDate = getBookingsByDate(activity, date);
 
         for (Booking booking : bookingsAtDate) {
@@ -58,6 +56,8 @@ public class BookingService {
         }
         Activity activity = activityOpt.get();
 
+
+        // Check if the requested timeslot is available
         List<TimeSlot> availableTimeSlots = getAvailableTimes(activity, booking.getDate(), booking.getPersonsAmount());
 
         for (TimeSlot availableTimeSlot : availableTimeSlots) {
