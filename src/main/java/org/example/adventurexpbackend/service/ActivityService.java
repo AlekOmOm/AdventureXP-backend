@@ -140,17 +140,6 @@ public class ActivityService {
     }
 
 
-    // ------------------- Delete -------------------
-
-    @Transactional
-    public void deleteActivityById(Long id) {
-        Optional<Activity> existingActivityOpt = activityRepository.findById(id);
-        if (existingActivityOpt.isPresent()) {
-            Activity existingActivity = existingActivityOpt.get();
-            activityRepository.delete(existingActivity);
-        }
-    }
-
     public Activity bookAndSave(Activity frontendActivity) {
         // assumes that
             // timeslots have been booked
