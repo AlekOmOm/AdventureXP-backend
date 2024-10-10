@@ -80,6 +80,7 @@ public class BookingRESTController {
             @RequestParam int personsAmount) {
 
         LocalDate bookingDate = parseDate(date);
+        Activity activity = activityService.getActivity(activityId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity not found"));
 
         List<TimeSlot> availableTimeSlots = bookingService.getAvailableTimes(activity, bookingDate, personsAmount);
 
@@ -91,39 +92,20 @@ public class BookingRESTController {
     @PostMapping("/book-timeslot")
     public ResponseEntity<String> bookTimeSlot(@RequestParam Long activityId, @RequestParam Long timeSlotId, @RequestParam String participantName, @RequestParam int personsAmount) {
 
-
         Optional<Activity> activityOptional = activityService.getActivity(activityId);
-        if (activityOptional.isEmpty()) {
-            return new ResponseEntity<>("Activity not found bruh", HttpStatus.NOT_FOUND);
-        }
+        validateOptional(activityOptional, "Activity");
 
-        Optional<TimeSlot> timeSlot = activityOptional.get().getTimeSlots().stream()
-                .filter(ts -> ts.getId().equals(timeSlotId))
-                .findFirst();
-
-        if (timeSlot.isEmpty()) {
-            return new ResponseEntity<>("Timeslot not found bruh", HttpStatus.NOT_FOUND);
-        }
+        Optional<TimeSlot> timeSlot = getTimeSlotById(activityOptional.get(), timeSlotId);
+        validateOptional(timeSlot, "TimeSlot");
 
         timeSlot.get().addParticipants(personsAmount);
-
         activityOptional.get().updateTimeSlot(timeSlot.get());
 
+        Activity activity = activityService.saveActivity(activityOptional.get());
 
-
-
-
-        Booking bookingCreated = bookingService.createBooking(booking);
-
-        if (bookingCreated == null) {
-            return new ResponseEntity<>("Fail", HttpStatus.INTERNAL_SERVER_ERROR);
+        if (activity == null) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to update activity");
         }
-
-        timeSlot.get().addParticipants(personsAmount);
-        activity.getTimeSlots().remove(timeSlot);
-
-        activityService.saveActivity(activity);
-
         return ResponseEntity.status(HttpStatus.CREATED).body("woop woop Timeslot booked successfully woop woop");
     }
 
