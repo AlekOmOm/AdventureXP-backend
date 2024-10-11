@@ -1,5 +1,7 @@
 package org.example.adventurexpbackend.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.example.adventurexpbackend.model.Activity;
 import org.example.adventurexpbackend.model.Booking;
 import org.example.adventurexpbackend.model.TimeSlot;
@@ -14,6 +16,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -33,15 +37,30 @@ public class BookingRESTController {
 
     // ------------------- 1. Create -------------------
     @PostMapping
-    public ResponseEntity<String> createBooking(@RequestBody Booking booking, @RequestBody Activity activity) {
-        System.out.println("Received booking request:" + booking);
+    public ResponseEntity<String> createBooking(@RequestBody Map<String, Object> data) {
+        System.out.println("Debug createBooking()");
+        System.out.println("data: "+data);
 
-        Booking bookingCreated = bookingService.createBooking(booking);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        try{
+            Booking booking = objectMapper.convertValue(data.get("booking"), Booking.class);
+            Activity activity = objectMapper.convertValue(data.get("activity"), Activity.class);
+            TimeSlot timeSlot = objectMapper.convertValue(data.get("timeSlot"), TimeSlot.class);
 
-        if (bookingCreated != null) {
-            return ResponseEntity.status(HttpStatus.CREATED).body("Booking successful");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Booking denied: Max participants limit reached");
+            System.out.println("Received booking request:" + booking);
+
+            Booking bookingCreated = bookingService.createBooking(booking);
+
+            if (bookingCreated != null) {
+                return ResponseEntity.status(HttpStatus.CREATED).body("Booking successful");
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Booking denied: Max participants limit reached");
+            }
+
+        }catch (IllegalArgumentException e){
+            System.err.println("Error converting request data: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid request data");
         }
     }
 
