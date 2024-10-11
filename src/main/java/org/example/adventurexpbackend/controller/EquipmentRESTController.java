@@ -16,14 +16,14 @@ public class EquipmentRESTController {
     @Autowired
     private EquipmentService equipmentService;
 
-    // Endpoint to create or update an equipment
+    // ------------------- 1. Create -------------------
     @PostMapping
     public ResponseEntity<Equipment>createOrUpdateEquipment(@RequestBody Equipment equipment){
         Equipment savedEquipment = equipmentService.save(equipment);
         return ResponseEntity.ok(savedEquipment);
     }
 
-    // Endpoint to retrieve all equipment
+    // ------------------- 2. Read -------------------
     @GetMapping
     public ResponseEntity<List<Equipment>> getAllEquipment(){
         List<Equipment> equipment = (List<Equipment>) equipmentService.getAllEquipment();
@@ -37,18 +37,33 @@ public class EquipmentRESTController {
         return equipment.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Endpoint to retrieve equipment by name
-    @GetMapping("/name/{name}")
+    @GetMapping("/{name}")
     public ResponseEntity<Equipment> getEquipmentByName(@PathVariable String name){
         Optional<Equipment> equipment = equipmentService.getEquipmentByName(name);
         return equipment.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Endpoint to delete equipment by id
+    // ------------------- 3. Update -------------------
+
+        // functional
+    @PutMapping("/mark-functional/{id}")
+    public ResponseEntity<String> markEquipmentAsFunctional(@PathVariable Long id) {
+        String result = equipmentService.markAsFunctional(id);
+
+        if (result.contains("Error")) {
+            return ResponseEntity.badRequest().body(result);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    // ------------------- 4. Delete -------------------
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEquipmentById(@PathVariable Long id){
         equipmentService.deleteEquipmentById(id);
         return ResponseEntity.noContent().build();
     }
+
+    
 
 }

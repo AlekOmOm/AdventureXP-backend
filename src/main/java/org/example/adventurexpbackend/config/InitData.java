@@ -5,10 +5,7 @@ import org.example.adventurexpbackend.model.Activity;
 import org.example.adventurexpbackend.model.Booking;
 import org.example.adventurexpbackend.model.Equipment;
 import org.example.adventurexpbackend.model.EquipmentType;
-import org.example.adventurexpbackend.repository.ActivityRepository;
-import org.example.adventurexpbackend.repository.BookingRepository;
-import org.example.adventurexpbackend.repository.EquipmentRepository;
-import org.example.adventurexpbackend.repository.EquipmentTypeRepository;
+import org.example.adventurexpbackend.repository.*;
 import org.example.adventurexpbackend.service.ActivityService;
 import org.example.adventurexpbackend.service.EquipmentService;
 import org.example.adventurexpbackend.service.EquipmentTypeService;
@@ -35,9 +32,10 @@ public class InitData implements CommandLineRunner {
     private final ActivityService activityService;
     private final EquipmentService equipmentService;
     private final EquipmentTypeService equipmentTypeService;
+    private final TimeSlotRepository timeSlotRepository;
 
     @Autowired
-    public InitData(ActivityRepository activityRepository, EquipmentRepository equipmentRepository, EquipmentTypeRepository equipmentTypeRepository, BookingRepository bookingRepository, SequenceResetter sequenceResetter, ActivityService activityService, EquipmentService equipmentService, EquipmentTypeService equipmentTypeService) {
+    public InitData(ActivityRepository activityRepository, EquipmentRepository equipmentRepository, EquipmentTypeRepository equipmentTypeRepository, BookingRepository bookingRepository, SequenceResetter sequenceResetter, ActivityService activityService, EquipmentService equipmentService, EquipmentTypeService equipmentTypeService, TimeSlotRepository timeSlotRepository) {
         this.activityRepository = activityRepository;
         this.equipmentRepository = equipmentRepository;
         this.equipmentTypeRepository = equipmentTypeRepository;
@@ -46,14 +44,15 @@ public class InitData implements CommandLineRunner {
         this.activityService = activityService;
         this.equipmentService = equipmentService;
         this.equipmentTypeService = equipmentTypeService;
+        this.timeSlotRepository = timeSlotRepository;
     }
 
     @Override
     @Transactional
     public void run(String... args) throws Exception {
         clearDB();
-        long[] startValues = getStartValues();
-        sequenceResetter.resetSequences(startValues[0], startValues[1], startValues[2], startValues[3]);
+
+        sequenceResetter.resetSequences(getStartValues());
 
         createBookings(createActivities());
     }
@@ -72,17 +71,17 @@ public class InitData implements CommandLineRunner {
                 activityRepository.findAll().isEmpty() ? 1 : activityRepository.findAll().get(activityRepository.findAll().size()-1).getId() + 1,
                 equipmentRepository.findAll().isEmpty() ? 1 : equipmentRepository.findAll().get(equipmentRepository.findAll().size()-1).getId() + 1,
                 equipmentTypeRepository.findAll().isEmpty() ? 1 : equipmentTypeRepository.findAll().get(equipmentTypeRepository.findAll().size()-1).getId() + 1,
+                timeSlotRepository.findAll().isEmpty() ? 1 : timeSlotRepository.findAll().get(timeSlotRepository.findAll().size()-1).getId() + 1,
                 bookingRepository.findAll().isEmpty() ? 1 : bookingRepository.findAll().get(bookingRepository.findAll().size()-1).getId() + 1
         };
     }
 
     private Set<EquipmentType> createPaintballEquipmentTypes() {
-
-        return new HashSet<>((new HashSet<>(List.of(
+        return new HashSet<>(List.of(
                 new EquipmentType("Paintball gun"),
                 new EquipmentType("Paintball mask"),
                 new EquipmentType("Paintball suit")
-        ))));
+        ));
     }
 
     private Set<EquipmentType> createClimbingEquipmentTypes() {
@@ -95,7 +94,6 @@ public class InitData implements CommandLineRunner {
     }
 
     private Set<EquipmentType> createGoKartEquipmentTypes() {
-
         return new HashSet<>((new HashSet<>(List.of(
                 new EquipmentType("Go-kart car"),
                 new EquipmentType("Go-kart helmet"),
@@ -121,7 +119,6 @@ public class InitData implements CommandLineRunner {
     }
 
     private List<Equipment> createGoKartEquipment() {
-
         return new ArrayList<>(List.of(
                 new Equipment("Go-kart car", true, false),
                 new Equipment("Go-kart helmet", true, false),
@@ -140,9 +137,9 @@ public class InitData implements CommandLineRunner {
         List<Equipment> goKartEquipmentList = createGoKartEquipment();
 
         List<Activity> activities = new ArrayList<>(List.of(
-                new Activity("Paintball", "Paintball is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, paintballEquipmentList, paintballEquipmentTypes),
-                new Activity("Climbing", "Climbing is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, climbingEquipmentList, climbingEquipmentTypes),
-                new Activity("Go-kart", "Go-kart is a fun activity for everyone", 100, 120, 10, 100, 2, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, goKartEquipmentList, goKartEquipmentTypes)
+                new Activity("Paintball", "Paintball is a fun activity for everyone", 100, 120, 10, 100, 60, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, paintballEquipmentList, paintballEquipmentTypes),
+                new Activity("Climbing", "Climbing is a fun activity for everyone", 100, 120, 10, 100, 60, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, climbingEquipmentList, climbingEquipmentTypes),
+                new Activity("Go-kart", "Go-kart is a fun activity for everyone", 100, 120, 10, 100, 60, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, goKartEquipmentList, goKartEquipmentTypes)
         ));
         return activityService.saveAllActivities(activities);
     }

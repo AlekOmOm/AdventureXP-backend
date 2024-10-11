@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.*;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -36,6 +37,9 @@ public class Activity {
     @JoinColumn(name = "activity_id")
     private Set<EquipmentType> equipmentTypes;
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "activity_id")
+    private List<TimeSlot> timeSlots;
     // ---------------Constructors----------------
     public Activity() {
     }
@@ -54,7 +58,10 @@ public class Activity {
         this.timeSlotInterval = timeSlotInterval;
         this.equipmentList = equipmentList;
         this.equipmentTypes = equipmentRequiredPerPerson;
+        this.timeSlots = initTimeSlots();
     }
+
+
 
     // --------------- Get and Set methods ----------------
     public Long getId() {
@@ -89,7 +96,8 @@ public class Activity {
         this.pricePrPerson = pricePrPerson;
     }
 
-//---------------Getters and Setters-----------------------
+
+    //---------------Getters and Setters-----------------------
     public int getTimeMaxLimit() {
         return timeMaxLimit;
     }
@@ -122,9 +130,7 @@ public class Activity {
         this.personsMin = personsMin;
     }
 
-    public int getPersonsMax() {
-        return personsMax;
-    }
+    public int getPersonsMax() {return personsMax;}
 
     public void setPersonsMax(int personsMax) {
         this.personsMax = personsMax;
@@ -170,6 +176,72 @@ public class Activity {
         this.equipmentTypes = equipmentTypes;
     }
 
+    public List<TimeSlot> getTimeSlots() {
+        return timeSlots;
+    }
+
+    public void setTimeSlots(List<TimeSlot> timeSlots) {
+        this.timeSlots = timeSlots;
+    }
+
+    public void updateTimeSlot(TimeSlot timeSlot) {
+        for (TimeSlot slot : this.timeSlots) {
+            if (slot.getDate().equals(timeSlot.getDate()) &&
+                    slot.getStartTime().equals(timeSlot.getStartTime()) &&
+                    slot.getEndTime().equals(timeSlot.getEndTime())) {
+                slot.updateFrom(timeSlot);
+                break;
+            }
+        }
+    }
+
+    // --------------- helper ----------------
+
+    private List<TimeSlot> initTimeSlots() {
+        List<TimeSlot> timeSlots = new ArrayList<>();
+        int interval = timeSlotInterval;
+
+        // Making the slots
+
+        while (openingTime.isBefore(closingTime)) {
+            LocalTime endTime = openingTime.plusMinutes(interval);
+            if (endTime.isAfter(closingTime)) {
+                endTime = closingTime;
+            }
+
+            TimeSlot timeSlot = new TimeSlot();
+            timeSlot.setStartTime(openingTime);
+            timeSlot.setEndTime(endTime);
+
+
+            timeSlot.setMaxParticipants(personsMax);
+            timeSlot.setCurrentParticipants(0);
+            timeSlot.setAvailable(true);
+
+            timeSlots.add(timeSlot);
+
+            openingTime = endTime;
+        }
+
+        return timeSlots;
+    }
+
+    public void updateFrom(Activity other) {
+        this.setName(other.getName());
+        this.setDescription(other.getDescription());
+        this.setPricePrPerson(other.getPricePrPerson());
+        this.setTimeMaxLimit(other.getTimeMaxLimit());
+        this.setAgeMin(other.getAgeMin());
+        this.setAgeMax(other.getAgeMax());
+        this.setPersonsMin(other.getPersonsMin());
+        this.setPersonsMax(other.getPersonsMax());
+        this.setOpeningTime(other.getOpeningTime());
+        this.setClosingTime(other.getClosingTime());
+        this.setTimeSlotInterval(other.getTimeSlotInterval());
+        this.setEquipmentList(other.getEquipmentList());
+        this.setEquipmentTypes(other.getEquipmentTypes());
+    }
+
     @Override
     public String toString() {
         return "Activity{" +
@@ -187,6 +259,8 @@ public class Activity {
                 ", timeSlotInterval=" + timeSlotInterval +
                 ", equipmentList=" + equipmentList +
                 ", equipmentTypes=" + equipmentTypes +
+                ", timeSlots=" + timeSlots +
                 '}';
     }
+
 }
