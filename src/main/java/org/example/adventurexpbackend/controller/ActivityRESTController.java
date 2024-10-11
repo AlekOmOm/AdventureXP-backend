@@ -29,6 +29,9 @@ public class ActivityRESTController {
     public ResponseEntity<Activity> createActivity(@RequestBody Activity activity) {
         System.out.println("createActivity");
         System.out.println(" Activity: " + activity);
+
+        activityService.multiplyEquipmentTypes(activity);
+
         return ResponseEntity.ok(activityService.saveActivity(activity));
     }
 

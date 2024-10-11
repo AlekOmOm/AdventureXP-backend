@@ -38,12 +38,13 @@ public class ActivityService {
     public Activity saveActivity(Activity activity) {
         System.out.println("Debug: ActivityService: saveActivity");
         System.out.println(" Activity: " + activity);
-        multiplyEquipmentTypes(activity);
+
         return activityRepository.save(activity);
     }
 
     @Transactional
     public List<Activity> saveAllActivities(List<Activity> activities) {
+        System.out.println("Debug: ActivityService: saveAllActivities");
         List<Activity> savedActivities = new ArrayList<>();
 
         List<Activity> repoList = activityRepository.findAll();
@@ -54,9 +55,28 @@ public class ActivityService {
         for (Activity activity : activities) {
             savedActivities.add(saveActivity(activity)); // Transactional
         }
+
+        System.out.println();
+        System.out.println(" activities amount: "+ activities.size());
+        System.out.println(" savedActivities amount: "+ savedActivities.size());
+        System.out.println(" activities non-functional equipment amount: "+ getAllNonfunctional(activities.getFirst().getEquipmentList()).size());
+        System.out.println(" savedActivities non-functional equipment amount: "+ getAllNonfunctional(savedActivities.getFirst().getEquipmentList()).size());
+
         return savedActivities;
     }
 
+
+    private List<Equipment> getAllNonfunctional(List<Equipment> list) {
+
+        List<Equipment> nonFunctional = new ArrayList<>();
+        for (Equipment equipment : list) {
+            if (!equipment.isFunctional()) {
+                nonFunctional.add(equipment);
+            }
+        }
+        return nonFunctional;
+
+    }
 
     // ------------------- 2. Read -------------------
 
@@ -101,7 +121,7 @@ public class ActivityService {
             existingActivity.getEquipmentList().addAll(activity.getEquipmentList());
             existingActivity.getEquipmentTypes().clear();
             existingActivity.getEquipmentTypes().addAll(activity.getEquipmentTypes());
-            multiplyEquipmentTypes(existingActivity);
+
             return activityRepository.save(existingActivity);
         } else {
             throw new IllegalArgumentException("Activity not found");
@@ -182,7 +202,7 @@ public class ActivityService {
 
     // ------------------- 5. Other -------------------
 
-    private void multiplyEquipmentTypes(Activity activity) {
+    public void multiplyEquipmentTypes(Activity activity) {
         List<Equipment> multipliedEquipmentList = new ArrayList<>();
         for (EquipmentType equipmentType : activity.getEquipmentTypes()) {
             for (int i = 0; i < activity.getPersonsMax(); i++) {

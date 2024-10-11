@@ -40,8 +40,8 @@ public class EquipmentService {
         return equipmentRepository.save(equipment);
     }
 
-    // Retrieve all equipment
-    public Iterable<Equipment> getAllEquipment() {
+
+    public List<Equipment> getAllEquipment() {
         return equipmentRepository.findAll();
     }
 

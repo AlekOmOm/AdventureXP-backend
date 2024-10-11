@@ -1,6 +1,5 @@
 package org.example.adventurexpbackend.config;
 
-import com.zaxxer.hikari.util.FastList;
 import org.example.adventurexpbackend.model.Activity;
 import org.example.adventurexpbackend.model.Booking;
 import org.example.adventurexpbackend.model.Equipment;
@@ -102,7 +101,7 @@ public class InitData implements CommandLineRunner {
         ))));
     }
 
-    private List<Equipment> createPaintballEquipment() {
+    private List<Equipment> createPaintballEquipmentForOnePerson() {
         return new ArrayList<>(List.of(
                 new Equipment("Paintball gun", true, false),
                 new Equipment("Paintball mask", true, false),
@@ -110,7 +109,7 @@ public class InitData implements CommandLineRunner {
         ));
     }
 
-    private List<Equipment> createClimbingEquipment() {
+    private List<Equipment> createClimbingEquipmentForOnePerson() {
         return new ArrayList<>(List.of(
                 new Equipment("Climbing shoes", true, false),
                 new Equipment("Climbing harness", true, false),
@@ -118,7 +117,7 @@ public class InitData implements CommandLineRunner {
         ));
     }
 
-    private List<Equipment> createGoKartEquipment() {
+    private List<Equipment> createGoKartEquipmentForOnePerson() {
         return new ArrayList<>(List.of(
                 new Equipment("Go-kart car", true, false),
                 new Equipment("Go-kart helmet", true, false),
@@ -132,16 +131,92 @@ public class InitData implements CommandLineRunner {
         Set<EquipmentType> climbingEquipmentTypes = createClimbingEquipmentTypes();
         Set<EquipmentType> goKartEquipmentTypes = createGoKartEquipmentTypes();
 
-        List<Equipment> paintballEquipmentList = createPaintballEquipment();
-        List<Equipment> climbingEquipmentList = createClimbingEquipment();
-        List<Equipment> goKartEquipmentList = createGoKartEquipment();
+        int personsMax = 20;
+
+        System.out.println("Debug createActivities");
+        System.out.println(" Paintball non-functional equipmentList: " + getAllNonfunctional(getPaintBallEquipment(personsMax)).size());
+
 
         List<Activity> activities = new ArrayList<>(List.of(
-                new Activity("Paintball", "Paintball is a fun activity for everyone", 100, 120, 10, 100, 60, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, paintballEquipmentList, paintballEquipmentTypes),
-                new Activity("Climbing", "Climbing is a fun activity for everyone", 100, 120, 10, 100, 60, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, climbingEquipmentList, climbingEquipmentTypes),
-                new Activity("Go-kart", "Go-kart is a fun activity for everyone", 100, 120, 10, 100, 60, 20, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, goKartEquipmentList, goKartEquipmentTypes)
+                new Activity("Paintball", "Paintball is a fun activity for everyone", 100, 120, 10, 100, 2, personsMax, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, getPaintBallEquipment(personsMax), paintballEquipmentTypes),
+                new Activity("Climbing", "Climbing is a fun activity for everyone", 100, 120, 10, 100, 2, personsMax, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, getClimbingEquipmentList(personsMax), climbingEquipmentTypes),
+                new Activity("Go-kart", "Go-kart is a fun activity for everyone", 100, 120, 10, 100, 2, personsMax, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, getGoKartEquipmentList(personsMax), goKartEquipmentTypes)
         ));
-        return activityService.saveAllActivities(activities);
+
+        System.out.println(" Paintball Activity non-functional equipment: "+ getAllNonfunctional(activities.getFirst().getEquipmentList()).size());
+        System.out.println();
+        System.out.println("Equipment list size for each activity before and after saving: ");
+        for (Activity activity : activities) {
+            System.out.println(" " + activity.getName() + ": " + activity.getEquipmentList().size());
+        }
+
+        List<Activity> savedActivities = activityService.saveAllActivities(activities);
+
+        for (Activity activity : savedActivities) {
+            System.out.println(" " + activity.getName() + ": " + activity.getEquipmentList().size());
+        }
+
+        System.out.println();
+        System.out.println(" saved paintball activity non-functional equipment: "+ getAllNonfunctional(savedActivities.getFirst().getEquipmentList()).size());
+        return savedActivities;
+    }
+
+    private List<Equipment> getPaintBallEquipment(int personsMax) {
+        List<Equipment> list = new ArrayList<>();
+        for(int i = 0; i < personsMax; i++) {
+            list.addAll(createPaintballEquipmentForOnePerson());
+        }
+        // additional two sets of non-functional equipment
+        for (int i = 0; i < 2; i++) {
+            for (Equipment equipment : createPaintballEquipmentForOnePerson()) {
+                equipment.setFunctional(false);
+                list.add(equipment);
+            }
+        }
+        return list;
+    }
+
+    private List<Equipment> getClimbingEquipmentList(int personsMax) {
+        List<Equipment> list = new ArrayList<>();
+        for(int i = 0; i < personsMax; i++) {
+            list.addAll(createClimbingEquipmentForOnePerson());
+        }
+
+        for (int i = 0; i < 2; i++) {
+            for (Equipment equipment : createClimbingEquipmentForOnePerson()) {
+                equipment.setFunctional(false);
+                list.add(equipment);
+            }
+        }
+        return list;
+    }
+
+    private List<Equipment> getGoKartEquipmentList(int personsMax) {
+        List<Equipment> list = new ArrayList<>();
+        for(int i = 0; i < personsMax; i++) {
+            list.addAll(createGoKartEquipmentForOnePerson());
+        }
+
+        for (int i = 0; i < 2; i++) {
+            for (Equipment equipment : createGoKartEquipmentForOnePerson()) {
+                equipment.setFunctional(false);
+                list.add(equipment);
+            }
+        }
+        return list;
+    }
+
+
+    private List<Equipment> getAllNonfunctional(List<Equipment> list) {
+
+        List<Equipment> nonFunctional = new ArrayList<>();
+        for (Equipment equipment : list) {
+            if (!equipment.isFunctional()) {
+                nonFunctional.add(equipment);
+            }
+        }
+        return nonFunctional;
+
     }
 
     private void createBookings(List<Activity> activities) {

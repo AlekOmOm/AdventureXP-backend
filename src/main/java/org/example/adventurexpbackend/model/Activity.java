@@ -242,6 +242,9 @@ public class Activity {
         this.setEquipmentTypes(other.getEquipmentTypes());
     }
 
+
+
+
     @Override
     public String toString() {
         return "Activity{" +

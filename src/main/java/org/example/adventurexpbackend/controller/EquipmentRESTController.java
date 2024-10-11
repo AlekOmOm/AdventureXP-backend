@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/equipment")
+@CrossOrigin(origins = "*")
 public class EquipmentRESTController {
 
     @Autowired
@@ -26,7 +27,9 @@ public class EquipmentRESTController {
     // ------------------- 2. Read -------------------
     @GetMapping
     public ResponseEntity<List<Equipment>> getAllEquipment(){
-        List<Equipment> equipment = (List<Equipment>) equipmentService.getAllEquipment();
+        List<Equipment> equipment = equipmentService.getAllEquipment();
+        System.out.println("Retrieving all equipment");
+        System.out.println(" Equipment retrieved: " + equipment.size());
         return ResponseEntity.ok(equipment);
     }
 

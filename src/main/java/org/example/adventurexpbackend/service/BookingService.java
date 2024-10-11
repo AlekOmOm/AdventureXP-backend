@@ -49,7 +49,7 @@ public class BookingService {
     // ----------------- CRUD Operations ---------------------
     @Transactional
     public Booking createBooking(Booking booking) {
-        Optional<Activity> activityOpt = activityService.getActivity(booking.getActivity());
+        Optional<Activity> activityOpt = Optional.ofNullable(activityService.getActivity(booking.getActivity()));
 
         if (activityOpt.isEmpty()) {
             return null;
