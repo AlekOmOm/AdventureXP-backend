@@ -1,11 +1,14 @@
 package org.example.adventurexpbackend.controller;
 
 import org.example.adventurexpbackend.model.Activity;
+import org.example.adventurexpbackend.model.Booking;
 import org.example.adventurexpbackend.model.Equipment;
 import org.example.adventurexpbackend.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,16 +29,17 @@ public class ActivityRESTController {
     public ResponseEntity<Activity> createActivity(@RequestBody Activity activity) {
         System.out.println("createActivity");
         System.out.println(" Activity: " + activity);
-        Activity savedActivity = activityService.saveActivity(activity);
-        return ResponseEntity.ok(savedActivity);
+        return ResponseEntity.ok(activityService.saveActivity(activity));
     }
 
     // ------------------- 2. Read -------------------
     @GetMapping
     public ResponseEntity<List<Activity>> getAllActivities() {
-        System.out.println("Retrieving all activities");
         List<Activity> activities = activityService.getAllActivities();
+
+        System.out.println("Retrieving all activities");
         System.out.println("Activities retrieved: " + activities);
+
         return ResponseEntity.ok(activities);
     }
 
@@ -46,28 +50,12 @@ public class ActivityRESTController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Activity> getActivityById(@PathVariable Long id) {
-        Optional<Activity> existingActivity = activityService.getActivity(id);
-
-        if (existingActivity.isPresent()) {
-            System.out.println("Activity retrieved: " + existingActivity.get());
-            return ResponseEntity.ok(existingActivity.get());
-        } else {
-            System.out.println("Activity with ID " + id + " not found");
-            return ResponseEntity.notFound().build();
-        }
+        return activityService.checkActivity(activityService.getActivity(id));
     }
 
     @GetMapping("/{name}")
     public ResponseEntity<Activity> getActivityByName(@PathVariable String name) {
-        Optional<Activity> existingActivity = activityService.getActivity(name);
-
-        if (existingActivity.isPresent()) {
-            System.out.println("Activity retrieved: " + existingActivity.get());
-            return ResponseEntity.ok(existingActivity.get());
-        } else {
-            System.out.println("Activity with name " + name + " not found");
-            return ResponseEntity.notFound().build();
-        }
+        return activityService.checkActivity(activityService.getActivity(name));
     }
 
     // ------------------- 3. Update -------------------
@@ -109,11 +97,12 @@ public class ActivityRESTController {
     // ------------------- 4. Delete -------------------
 
 
-    // Endpoint to delete an activity by id
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteActivityById(@PathVariable Long id) {
         activityService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+
 
 }

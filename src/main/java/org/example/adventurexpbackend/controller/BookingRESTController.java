@@ -31,8 +31,6 @@ public class BookingRESTController {
     private ActivityService activityService;
 
 
-    //ResponseEntities need to be changed at somepoint to display custom messages, or be deleted if they are not needed
-
     // ------------------- Operations -------------------
 
     // ------------------- 1. Create -------------------
@@ -99,7 +97,7 @@ public class BookingRESTController {
             @RequestParam int personsAmount) {
 
         LocalDate bookingDate = parseDate(date);
-        Activity activity = activityService.getActivity(activityId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity not found"));
+        Activity activity = activityService.getActivity(activityId);
 
         List<TimeSlot> availableTimeSlots = bookingService.getAvailableTimes(activity, bookingDate, personsAmount);
 
@@ -111,7 +109,7 @@ public class BookingRESTController {
     @PostMapping("/book-timeslot")
     public ResponseEntity<String> bookTimeSlot(@RequestParam Long activityId, @RequestParam Long timeSlotId, @RequestParam String participantName, @RequestParam int personsAmount) {
 
-        Optional<Activity> activityOptional = activityService.getActivity(activityId);
+        Optional<Activity> activityOptional = Optional.ofNullable(activityService.getActivity(activityId));
         validateOptional(activityOptional, "Activity");
 
         Optional<TimeSlot> timeSlot = getTimeSlotById(activityOptional.get(), timeSlotId);

@@ -22,13 +22,9 @@ public class EquipmentService {
         this.restTemplate = restTemplate;
     }
 
-
-    // Method to mark equipment as functionall
+    // ------------------- Operations -------------------
     public String markAsFunctional(Long equipmentId) {
         Optional<Equipment> optionalEquipment = equipmentRepository.findById(equipmentId);
-
-
-    // ----------------- Operations ---------------------
 
         if (optionalEquipment.isPresent()) {
             Equipment equipment = optionalEquipment.get();
