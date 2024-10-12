@@ -1,0 +1,3 @@
+[submodule "libs/library"]
+	path = libs/library
+	url = https://github.com/AlekOmOm/library.git
