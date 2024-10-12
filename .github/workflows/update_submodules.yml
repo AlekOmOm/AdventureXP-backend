@@ -1,0 +1,22 @@
+name: Update Submodules
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update_submodules:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - name: Update submodules
+      run: |
+        git submodule update --remote --merge
+        git add .
+        git commit -m "Update submodules"
+        git push
