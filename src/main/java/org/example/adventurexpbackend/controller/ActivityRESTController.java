@@ -13,6 +13,9 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.Optional;
 
+import static org.example.adventurexpbackend.service.ActivityService.setObjects;
+
+
 @RestController
 @RequestMapping("/Activity")
 @CrossOrigin(origins = "*")
@@ -53,6 +56,7 @@ public class ActivityRESTController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Activity> getActivityById(@PathVariable Long id) {
+
         return activityService.checkActivity(activityService.getActivity(id));
     }
 
@@ -64,25 +68,13 @@ public class ActivityRESTController {
     // ------------------- 3. Update -------------------
     @PutMapping("/{id}")
     public ResponseEntity<Activity> updateActivity(@PathVariable Long id, @RequestBody Activity activity) {
-        System.out.println("Updating activity with ID: " + id);
-        Optional<Activity> existingActivity = Optional.ofNullable(activityService.updateActivity(activity));
-        System.out.println("updateActivity");
-        System.out.println(" Activity: " + activity);
-        System.out.println(" ExistingActivity: " + existingActivity);
 
-        if (existingActivity.isPresent()) {
-            activity.setId(id);
-            activity.setEquipmentList(existingActivity.get().getEquipmentList());
-            activity.setEquipmentTypes(existingActivity.get().getEquipmentTypes());
-            System.out.println(" ActivityUpdated: " + activity);
-            Activity updatedActivity = activityService.saveActivity(activity);
-            System.out.println("Activity updated: " + updatedActivity);
-            return ResponseEntity.ok(updatedActivity);
-        } else {
-            System.out.println("Activity with ID " + id + " not found");
-            return ResponseEntity.notFound().build();
-        }
+        setObjects(id, activity, activityService.getActivity(id));
+
+        return activityService.checkActivity(activityService.saveActivity(activity));
     }
+
+
 
     @PutMapping("/{id}/equipment")
     public ResponseEntity<Void> updateEquipmentList(@PathVariable Long id, @RequestBody List<Equipment> newEquipmentList) {
@@ -105,6 +97,10 @@ public class ActivityRESTController {
         activityService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+
+
+
 
 
 

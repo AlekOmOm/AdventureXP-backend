@@ -82,6 +82,8 @@ public class ActivityService {
 
 
     public Activity getActivity(Activity activity) {
+        System.out.println("Debug: ActivityService: getActivity");
+        System.out.println(" Activity: " + activity);
         if (activity.getId() != null) {
             return activityRepository.findById(activity.getId()).orElse(null);
         } if (activity.getName() != null) {
@@ -115,11 +117,21 @@ public class ActivityService {
     @Transactional
     public Activity updateActivity(Activity activity) {
         Optional<Activity> existingActivityOpt = Optional.ofNullable(getActivity(activity));
+        System.out.println();
+        System.out.println("Debug: ActivityService: updateActivity");
+        System.out.println(" Activity: " + activity);
+        System.out.println(" ExistingActivity: " + existingActivityOpt);
+        System.out.println();
         if (existingActivityOpt.isPresent()) {
             Activity existingActivity = updateActivityFromExistent(activity, existingActivityOpt);
-            existingActivity.getEquipmentList().clear();
+
+            if (activity.getEquipmentList() != null) {
+                existingActivity.getEquipmentList().clear();
+            }
             existingActivity.getEquipmentList().addAll(activity.getEquipmentList());
-            existingActivity.getEquipmentTypes().clear();
+            if (activity.getEquipmentTypes() != null) {
+                existingActivity.getEquipmentTypes().clear();
+            }
             existingActivity.getEquipmentTypes().addAll(activity.getEquipmentTypes());
 
             return activityRepository.save(existingActivity);
@@ -129,6 +141,13 @@ public class ActivityService {
     }
 
     private static Activity updateActivityFromExistent(Activity activity, Optional<Activity> existingActivityOpt) {
+
+        System.out.println("Debug: ActivityService: updateActivityFromExistent");
+        System.out.println(" Activity: " + activity);
+        System.out.println("  equipmentList(): " + activity.getEquipmentList().size());
+        System.out.println(" ExistingActivity: " + existingActivityOpt);
+        System.out.println("  equipmentList(): " + existingActivityOpt.get().getEquipmentList().size());
+
         if (existingActivityOpt.isEmpty()) {
             throw new IllegalArgumentException("Activity not found");
         }
@@ -222,19 +241,27 @@ public class ActivityService {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-
     public void validateOptional(Optional<?> optional, String entityName) {
         if (optional.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, entityName + " not found");
         }
     }
 
-
     public <T> ResponseEntity<List<T>> createResponseEntity(List<T> data) {
         return data.isEmpty()
                 ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
                 : new ResponseEntity<>(data, HttpStatus.OK);
     }
+
+    public static void setObjects(Long id, Activity activity, Activity existingActivity) {
+        activity.setId(id);
+        activity.setEquipmentList(existingActivity.getEquipmentList());
+        activity.setEquipmentTypes(existingActivity.getEquipmentTypes());
+        activity.setTimeSlots(existingActivity.getTimeSlots());
+    }
+
+
+
 }
 
 
