@@ -49,7 +49,7 @@ public class ActivityService {
 
         List<Activity> repoList = activityRepository.findAll();
         if (!repoList.isEmpty()) {
-            sequenceResetter.resetAutoIncrement("activity", repoList.getLast().getId() + 1);
+            sequenceResetter.resetAutoIncrement("activity", repoList.get(repoList.size()-1).getId() + 1);
         }
 
         for (Activity activity : activities) {
@@ -59,8 +59,8 @@ public class ActivityService {
         System.out.println();
         System.out.println(" activities amount: "+ activities.size());
         System.out.println(" savedActivities amount: "+ savedActivities.size());
-        System.out.println(" activities non-functional equipment amount: "+ getAllNonfunctional(activities.getFirst().getEquipmentList()).size());
-        System.out.println(" savedActivities non-functional equipment amount: "+ getAllNonfunctional(savedActivities.getFirst().getEquipmentList()).size());
+        System.out.println(" activities non-functional equipment amount: "+ getAllNonfunctional(activities.get(0).getEquipmentList()).size());
+        System.out.println(" savedActivities non-functional equipment amount: "+ getAllNonfunctional(savedActivities.get(0).getEquipmentList()).size());
 
         return savedActivities;
     }

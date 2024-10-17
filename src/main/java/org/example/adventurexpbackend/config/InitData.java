@@ -143,7 +143,7 @@ public class InitData implements CommandLineRunner {
                 new Activity("Go-kart", "Go-kart is a fun activity for everyone", 100, 120, 10, 100, 2, personsMax, LocalTime.of(10, 0), LocalTime.of(18, 0), 60, getGoKartEquipmentList(personsMax), goKartEquipmentTypes)
         ));
 
-        System.out.println(" Paintball Activity non-functional equipment: "+ getAllNonfunctional(activities.getFirst().getEquipmentList()).size());
+        System.out.println(" Paintball Activity non-functional equipment: "+ getAllNonfunctional(activities.get(0).getEquipmentList()).size());
         System.out.println();
         System.out.println("Equipment list size for each activity before and after saving: ");
         for (Activity activity : activities) {
@@ -157,7 +157,7 @@ public class InitData implements CommandLineRunner {
         }
 
         System.out.println();
-        System.out.println(" saved paintball activity non-functional equipment: "+ getAllNonfunctional(savedActivities.getFirst().getEquipmentList()).size());
+        System.out.println(" saved paintball activity non-functional equipment: "+ getAllNonfunctional(savedActivities.get(0).getEquipmentList()).size());
         return savedActivities;
     }
 

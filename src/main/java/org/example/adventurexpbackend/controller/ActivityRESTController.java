@@ -17,7 +17,7 @@ import static org.example.adventurexpbackend.service.ActivityService.setObjects;
 
 
 @RestController
-@RequestMapping("/Activity")
+@RequestMapping("/api/Activity")
 @CrossOrigin(origins = "*")
 public class ActivityRESTController {
 

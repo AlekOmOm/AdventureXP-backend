@@ -22,7 +22,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/booking")
+@RequestMapping("/api/booking")
 public class BookingRESTController {
 
     @Autowired
